@@ -1,0 +1,81 @@
+﻿<UserControl x:Class="DuplicateCleaner.UserControls.DuplicatesControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DuplicateCleaner.UserControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid Margin="5,5,5,5" Name="grid1" Background="Transparent" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <ListView Name="lvFiles" SelectionChanged="lvFiles_SelectionChanged" >
+                    <ListView.Resources>
+                        <Style TargetType="{x:Type ListViewItem}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAlternate}" Value="True">
+                                    <Setter Property="Background" Value="LightBlue" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                            <Style.Setters>
+                                <Setter Property="BorderThickness" Value="0,0,0,1"></Setter>
+                                <Setter Property="BorderBrush" Value="LightGray"></Setter>
+                            </Style.Setters>
+                        </Style>
+                    </ListView.Resources>
+                    <ListView.View>
+                        <GridView x:Name="gv">
+                            <GridViewColumn>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Width="20" Source="{Binding Icon}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Group" Width="50" DisplayMemberBinding="{Binding Group}" />
+                            <GridViewColumn Header="Name" Width="200" DisplayMemberBinding="{Binding Name}" />
+                            <GridViewColumn Header="Location" Width="320" DisplayMemberBinding="{Binding DirectoryName}" />
+                            <GridViewColumn Header="Size" Width="80" DisplayMemberBinding="{Binding Size}" />
+                            <GridViewColumn Header="Date modified" Width="150" DisplayMemberBinding="{Binding DateModified}" />
+                            <GridViewColumn Header="Delete" Width="50">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox x:Name="chk" Click="chk_Click" IsChecked="{Binding Deleted}">
+                                            <CheckBox.LayoutTransform>
+                                                <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                                            </CheckBox.LayoutTransform>
+                                        </CheckBox>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="Transparent" />
+            <Grid Grid.Column="2" Name="previewGrid">
+                <Border  BorderBrush="LightGray" BorderThickness="1">
+                    <Image Name="ImageControl" Margin="5" />
+                </Border>
+            </Grid>
+        </Grid>
+        <!--<Border Margin="5,0,0,0" BorderBrush="Gray" BorderThickness="1" Grid.Row="1" Background="LightGray">-->
+        <StatusBar Grid.Row="1" Margin="5,0,5,0">
+            <TextBlock x:Name="fileCountLabel" FontWeight="Bold" Foreground="Green" Margin="30,0,0,0" Width="100" VerticalAlignment="Center"/>
+            <TextBlock x:Name="timeTakenLabel" FontWeight="Bold" Foreground="Green"  Margin="30,0,0,0" Width="100" VerticalAlignment="Center"/>
+        </StatusBar>
+            <!--<StackPanel Orientation="Horizontal">
+                <Label Name="test" Content="hello" />
+            </StackPanel>-->
+        <!--</Border>-->
+    </Grid>
+</UserControl>

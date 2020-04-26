@@ -1,0 +1,198 @@
+﻿<UserControl x:Class="DuplicateCleaner.UserControls.PreferenceControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DuplicateCleaner.UserControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid  Margin="10,10,0,10" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border  BorderThickness="1" BorderBrush="LightGray">
+                <ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0"  Text="Scan Locations" Style="{StaticResource PrefrenceHeader}"></TextBlock>
+                        <Button BorderThickness="0" Background="Transparent" Grid.Row="1" HorizontalAlignment="Left" Width="50" Height="50" Margin="10" Name="btnAddLocation" Click="btnAddLocation_Click">
+                            <Image x:Name="imgAddFolder" />
+                        </Button>
+                        <ListView PreviewMouseWheel="lvLocations_PreviewMouseWheel" Name="lvLocations" Background="Transparent" Grid.ColumnSpan="2" BorderThickness="0" Grid.Row="2" ItemsSource="{Binding}" ItemContainerStyle="{StaticResource ListViewItemStyle1}">
+                            <ListView.View>
+                                <GridView ColumnHeaderContainerStyle="{StaticResource myHeaderStyle}">
+                                    <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}" />
+                                    <GridViewColumn Width="100">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox VerticalContentAlignment="Center" Content="Exclude" x:Name="chkExclude" Checked="chkExclude_Checked" Unchecked="chkExclude_Unchecked" IsChecked="{Binding Exclude}">
+                                                    <!--<Border Background="Gray" Height="20" Width="60">
+                                                        <TextBlock HorizontalAlignment="Center" Text="Exclude" Foreground="LightGray" FontSize="10" VerticalAlignment="Center" />
+                                                    </Border>-->
+                                                </CheckBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Width="100">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <!--<CheckBox Checked="chkSubfolders_Checked" Unchecked="chkSubfolders_Unchecked" Margin="10,0,0,10" x:Name="chkSubfolders" IsChecked="{Binding IncludeSubfolders}" >
+                                                    <Border Background="Gray" Height="20" Width="60">
+                                                        <TextBlock HorizontalAlignment="Center" Text="Subfolders" Foreground="LightGray" FontSize="10" VerticalAlignment="Center" />
+                                                    </Border>
+                                                </CheckBox>-->
+                                                <CheckBox Content="Subfolders" Checked="chkSubfolders_Checked" Unchecked="chkSubfolders_Unchecked" x:Name="chkSubfolders" IsChecked="{Binding IncludeSubfolders}" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn >
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button BorderThickness="0" Width="15" Height="15" Background="Transparent" Name="btnRemoveLocation" Click="btnRemoveLocation_Click">
+                                                    <Image Name="img2" Source="{Binding RemoveIcon}"  />
+                                                </Button>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <StackPanel Orientation="Horizontal" Grid.Row="3" VerticalAlignment="Bottom">
+                            <CheckBox x:Name="chkHiddenFolder" Content="Include Hidden Folders" Style="{StaticResource bigCheckbox}" VerticalContentAlignment="Bottom" VerticalAlignment="Bottom" Checked="chkHiddenFolder_Checked" Unchecked="chkHiddenFolder_Unchecked"/>
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </Border>
+            <Border Grid.Column="0" Grid.Row="1" BorderThickness="1" BorderBrush="LightGray" Margin="0,10,0,0" VerticalAlignment="Bottom">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Delete Options"  Style="{StaticResource PrefrenceHeader}"></TextBlock>
+                    <StackPanel Orientation="Vertical" Margin="0,10,0,0">
+                        <RadioButton Style="{StaticResource bigRadioButton}" Margin="0,10,0,10" x:Name="rdMoveToRecycleBin" IsChecked="True" Click="rdMoveToRecycleBin_Click" Content="Move to Recycle Bin" GroupName="DeleteOption"/>
+                        <RadioButton Style="{StaticResource bigRadioButton}" Margin="0,10,0,10" x:Name="rdDeletePermanent" Click="rdDeletePermanent_Click" Content="Delete Permanently" GroupName="DeleteOption"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Column="1" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" BorderThickness="1" BorderBrush="LightGray">
+                <StackPanel Orientation="Vertical" Margin="10">
+                    <TextBlock Text="File Types"  Style="{StaticResource PrefrenceHeader}"></TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox x:Name="chkImages" Style="{StaticResource chkTransform}" Checked="chkImages_Checked" Unchecked="chkImages_Unchecked" >
+                            <Border Background="Gray" Height="20" Width="60">
+                                <TextBlock HorizontalAlignment="Center" Text="Images" Foreground="LightGray" FontSize="10" VerticalAlignment="Center" />
+                            </Border>
+                        </CheckBox>
+                        <CheckBox Style="{StaticResource chkTransform}" Name="chkMusic" Checked="chkMusic_Checked" Unchecked="chkMusic_Unchecked" >
+                            <Border Background="Gray" Height="20" Width="60">
+                                <TextBlock HorizontalAlignment="Center" Text="Music" Foreground="LightGray" FontSize="10" VerticalAlignment="Center" />
+                            </Border>
+                        </CheckBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Style="{StaticResource chkTransform}" Name="chkVideo" Checked="chkVideo_Checked" Unchecked="chkVideo_Unchecked" >
+                            <Border Background="Gray" Height="20" Width="60">
+                                <TextBlock HorizontalAlignment="Center" Text="Video" Foreground="LightGray" FontSize="10" VerticalAlignment="Center" />
+                            </Border>
+                        </CheckBox>
+                        <CheckBox Style="{StaticResource chkTransform}" Name="chkDocs" Checked="chkDocs_Checked" Unchecked="chkDocs_Unchecked" >
+                            <Border Background="Gray" Height="20" Width="60">
+                                <TextBlock HorizontalAlignment="Center" Text="Documents" Foreground="LightGray" FontSize="10" VerticalAlignment="Center" />
+                            </Border>
+                        </CheckBox>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="1" BorderThickness="1" BorderBrush="LightGray" Margin="0,10,0,0">
+                <StackPanel Orientation="Vertical" Margin="10">
+                    <TextBlock Text="Size" Style="{StaticResource PrefrenceHeader}"></TextBlock>
+                    <StackPanel Margin="20">
+                        <Grid Margin="20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="8*" />
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="22*" />
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Style="{StaticResource bigCheckbox}" x:Name="chkMinSize" Content="Min Size" VerticalAlignment="Center" Checked="chkMinSize_Checked" Unchecked="chkMinSize_Unchecked" Grid.Column="0"></CheckBox>
+                            <TextBox Grid.Column="1" Name="txtMinSize" IsEnabled="False"  VerticalContentAlignment="Center" ></TextBox>
+                            <ComboBox Grid.Column="2" x:Name="cmbMinSize" IsEnabled="False" HorizontalAlignment="Left" SelectedIndex="0" SelectionChanged="cmbMinSize_SelectionChanged">
+                                <ComboBoxItem Content="KB" />
+                                <ComboBoxItem Content="MB" />
+                                <ComboBoxItem Content="GB" />
+                            </ComboBox>
+                        </Grid>
+                        <Grid Margin="20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="8*" />
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="22*" />
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Style="{StaticResource bigCheckbox}" x:Name="chkMaxSize" VerticalAlignment="Center" Content="Max Size" Checked="chkMaxSize_Checked" Grid.Column="0" Unchecked="chkMaxSize_Unchecked"></CheckBox>
+                            <TextBox Grid.Column="1" Name="txtMaxSize" IsEnabled="False" VerticalContentAlignment="Center"></TextBox>
+                            <ComboBox Grid.Column="2" x:Name="cmbMaxSize" IsEnabled="False" HorizontalAlignment="Left" SelectionChanged="cmbMaxSize_SelectionChanged">
+                                <ComboBoxItem Content="KB" />
+                                <ComboBoxItem Content="MB" />
+                                <ComboBoxItem Content="GB" />
+                            </ComboBox>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Row="2" BorderThickness="1" BorderBrush="LightGray" Margin="0,10,0,0">
+                <StackPanel Orientation="Vertical" Margin="10">
+                    <TextBlock Text="Modified Date" Style="{StaticResource PrefrenceHeader}"></TextBlock>
+                    <StackPanel Margin="20">
+                        <Grid Margin="20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="10*" />
+                                <ColumnDefinition Width="24*" />
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Style="{StaticResource bigCheckbox}" x:Name="chkMinModifyDate" Content="Modified After" VerticalAlignment="Center" Checked="chkMinModifyDate_Checked" Unchecked="chkMinModifyDate_Unchecked" Grid.Column="0"></CheckBox>
+                            <DatePicker Name="dpMinModifyDate" SelectedDateChanged="dpMinModifyDate_SelectedDateChanged" IsEnabled="False" DisplayDate="2019-01-01" Grid.Column="1" HorizontalAlignment="Left">
+                                <DatePicker.Resources>
+                                    <Style TargetType="DatePickerTextBox">
+                                        <Setter Property="IsReadOnly" Value="True"/>
+                                    </Style>
+                                </DatePicker.Resources>
+                            </DatePicker>
+                        </Grid>
+                        <Grid Margin="20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="10*" />
+                                <ColumnDefinition Width="24*" />
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Style="{StaticResource bigCheckbox}" x:Name="chkMaxModifyDate" VerticalAlignment="Center" Content="Modified Before" Checked="chkMaxModifyDate_Checked" Unchecked="chkMaxModifyDate_Unchecked"></CheckBox>
+                            <DatePicker Name="dpMaxModifyDate" SelectedDateChanged="dpMaxModifyDate_SelectedDateChanged" IsEnabled="False" HorizontalAlignment="Left" DisplayDate="2019-01-01" Grid.Column="2" >
+                                <DatePicker.Resources>
+                                    <Style TargetType="DatePickerTextBox">
+                                        <Setter Property="IsReadOnly" Value="True"/>
+                                    </Style>
+                                </DatePicker.Resources>
+                            </DatePicker>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

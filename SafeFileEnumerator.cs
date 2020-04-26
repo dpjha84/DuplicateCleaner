@@ -24,42 +24,61 @@ namespace DuplicateCleaner
                 }
                 return directories.Concat(Directory.EnumerateDirectories(parentDirectory, searchPattern));
             }
-            catch (UnauthorizedAccessException ex)
+            catch (UnauthorizedAccessException)
             {
                 return Enumerable.Empty<string>();
             }
         }
 
-        public static IEnumerable<string> EnumerateFiles(string path, SearchOption searchOpt, HashSet<string> extList, List<string> exc, int minSize)
+        public static IEnumerable<string> EnumerateFiles(string path, SearchOption searchOpt, HashSet<string> extList, 
+            HashSet<string> exc, long minSize, long maxSize, DateTime? modifyAfter, DateTime? modifyBefore, bool includeHiddenFolders)
         {
             try
             {
+                var dir = new DirectoryInfo(path);
+                if (!includeHiddenFolders && (dir.Parent != null && dir.Attributes.HasFlag(FileAttributes.Hidden)))
+                    return Enumerable.Empty<string>();
+
                 var dirFiles = Enumerable.Empty<string>();
                 var dirName = Path.GetFileName(path);
-                if (exc.Contains(path.ToLowerInvariant()) || exc.Where((x) => x.StartsWith(path.ToLowerInvariant() + "\\")).ToList().Count > 0 ||
-                    (!string.IsNullOrWhiteSpace(dirName) && dirName.StartsWith("$")))
+                if (exc.Contains(path)
+                    || exc.Where((x) => x.StartsWith(path.ToLowerInvariant() + "\\")).ToList().Count > 0
+                    //|| (!string.IsNullOrWhiteSpace(dirName) && dirName.StartsWith("$"))
+                    )
                     return dirFiles;
                 if (searchOpt == SearchOption.AllDirectories)
                 {
                     dirFiles = Directory.EnumerateDirectories(path)
-                                        .SelectMany(x => EnumerateFiles(x, searchOpt, extList, exc, minSize));
+                                        .SelectMany(x => EnumerateFiles(x, searchOpt, extList, exc, minSize, maxSize, modifyAfter, modifyBefore, includeHiddenFolders));
                 }
                 return dirFiles.Concat(Directory.EnumerateFiles(path, "*.*")
-                    .Where(file => MatchingExtension(file, extList)
-                        && new FileInfo(file).Length / (1024 * 1024) >= minSize));
+                    .Where(file => (MatchingExtension(file, extList)
+                        && (minSize == 0 || SizeHelper.GetSizeSafe(file) >= minSize)
+                        && (maxSize == 0 || SizeHelper.GetSizeSafe(file) <= maxSize)
+                        && (modifyAfter == null || new FileInfo(file).LastWriteTime >= modifyAfter.Value)
+                        && (modifyBefore == null || new FileInfo(file).LastWriteTime <= modifyBefore.Value)
+                        )));
             }
-            catch (UnauthorizedAccessException ex)
+            catch (UnauthorizedAccessException)
             {
                 return Enumerable.Empty<string>();
             }
-            catch (PathTooLongException ex)
+            catch (PathTooLongException)
+            {
+                return Enumerable.Empty<string>();
+            }
+            catch (FileNotFoundException)
+            {
+                return Enumerable.Empty<string>();
+            }
+            catch (IOException)
             {
                 return Enumerable.Empty<string>();
             }
         }
         static bool MatchingExtension(string file, HashSet<string> extList)
         {
-            return extList.Count == 0 ? true : extList.Any(x => file.EndsWith(x, StringComparison.OrdinalIgnoreCase));
+            return extList.Count == 0 ? false : extList.Contains(".*") ? true : extList.Any(x => file.EndsWith(x, StringComparison.OrdinalIgnoreCase));
         }
     }
 }
