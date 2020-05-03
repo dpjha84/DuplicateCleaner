@@ -7,15 +7,16 @@ namespace DuplicateCleaner
 {
     public class DeletedFile
     {
-        public string Name { get; set; }
+        public long Length { get; set; }
 
-        public string Size { get; set; }
+        public string Name { get; set; }
 
         public string ActionTaken { get; set; }
     }
+
     public class FileInfoWrapper
     {
-        public bool IsAlternate => Group%2 == 0;
+        public bool IsAlternate => Group % 2 == 0;
         public int Group { get; set; }
         readonly FileInfo fileInfo;
         readonly string hash;
@@ -25,9 +26,8 @@ namespace DuplicateCleaner
             fileInfo = new FileInfo(filePath);
         }
 
-        public FileInfoWrapper(string filePath, string hash)
+        public FileInfoWrapper(string filePath, string hash) : this(filePath)
         {
-            fileInfo = new FileInfo(filePath);
             this.hash = hash;
         }
 
@@ -36,6 +36,8 @@ namespace DuplicateCleaner
         public string Hash => hash;
 
         public string Name => fileInfo.Name;
+
+        public FileType FileType { get; set; }
 
         public string FullName => fileInfo.FullName;
 
@@ -46,6 +48,8 @@ namespace DuplicateCleaner
         public string Size => $"{Math.Ceiling((double)Length / 1024)} KB";
 
         public DateTime DateModified => fileInfo.LastWriteTime;
+
+        public DateTime DateCreated => fileInfo.CreationTime;
 
         public BitmapSource Icon
         {
@@ -61,5 +65,15 @@ namespace DuplicateCleaner
                 }
             }
         }
+
+    }
+
+    public enum FileType
+    {
+        Custom,
+        Image,
+        Audio,
+        Video,
+        Document
     }
 }

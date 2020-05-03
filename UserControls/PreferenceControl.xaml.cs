@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -49,16 +47,16 @@ namespace DuplicateCleaner.UserControls
                 cmbMinSize.IsEnabled = true;
                 var suffix = SizeHelper.Suffix(searchInfo.MinSize).Split();
                 txtMinSize.Text = double.Parse(suffix[0]).ToString();
-                cmbMinSize.SelectedItem = GetIndexByUnit(suffix[1]);
+                cmbMinSize.SelectedIndex = GetIndexByUnit(suffix[1]);
             }
             else
             {
-                searchInfo.MinSize = 0;
                 chkMinSize.IsChecked = false;
                 txtMinSize.IsEnabled = false;
-                txtMinSize.Text = "1";
                 cmbMinSize.IsEnabled = false;
                 cmbMinSize.SelectedIndex = 0;
+                txtMinSize.Text = "1";
+                searchInfo.MinSize = 0;
             }
             if (searchInfo.MaxSize != 0)
             {
@@ -71,12 +69,12 @@ namespace DuplicateCleaner.UserControls
             }
             else
             {
-                searchInfo.MaxSize = 0;
                 chkMaxSize.IsChecked = false;
                 txtMaxSize.IsEnabled = false;
-                txtMaxSize.Text = "100";
                 cmbMaxSize.IsEnabled = false;
                 cmbMaxSize.SelectedIndex = 0;
+                txtMaxSize.Text = "100";
+                searchInfo.MaxSize = 0;
             }
 
             if (searchInfo.ModifiedAfter != null)
@@ -135,7 +133,7 @@ namespace DuplicateCleaner.UserControls
                 searchInfo.ScanLocations.Remove(location);
                 lvLocations.Items.Refresh();
             }
-        }    
+        }
 
         private void NumberValidationTextBox(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
@@ -167,7 +165,7 @@ namespace DuplicateCleaner.UserControls
 
         private void cmbMinSize_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(!string.IsNullOrWhiteSpace(txtMinSize.Text))
+            if (!string.IsNullOrWhiteSpace(txtMinSize.Text))
                 searchInfo.MinSize = SizeHelper.GetSizeInBytes(txtMinSize.Text, ((ContentControl)cmbMinSize.SelectedValue).Content as string);
         }
 
@@ -222,7 +220,7 @@ namespace DuplicateCleaner.UserControls
         private void chkMaxModifyDate_Unchecked(object sender, RoutedEventArgs e)
         {
             dpMaxModifyDate.IsEnabled = false;
-            searchInfo.ModifiedBefore= null;
+            searchInfo.ModifiedBefore = null;
         }
 
         private void dpMinModifyDate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -255,7 +253,7 @@ namespace DuplicateCleaner.UserControls
         {
             searchInfo.IncludeImages = false;
             SetBorderColor(sender, System.Windows.Media.Brushes.Gray);
-        }        
+        }
 
         private void chkMusic_Checked(object sender, RoutedEventArgs e)
         {
@@ -295,10 +293,14 @@ namespace DuplicateCleaner.UserControls
 
         void SetBorderColor(object sender, System.Windows.Media.Brush col)
         {
-            if (col == System.Windows.Media.Brushes.Green)
-                (((sender as CheckBox).Content as Border).Child as TextBlock).Foreground = System.Windows.Media.Brushes.White;
-            else
-                (((sender as CheckBox).Content as Border).Child as TextBlock).Foreground = System.Windows.Media.Brushes.LightGray;
+            var textBlock = ((sender as CheckBox)?.Content as Border)?.Child as TextBlock;
+            if (textBlock != null)
+            {
+                if (col == System.Windows.Media.Brushes.Green)
+                    textBlock.Foreground = System.Windows.Media.Brushes.White;
+                else
+                    textBlock.Foreground = System.Windows.Media.Brushes.LightGray;
+            }
             if ((sender as CheckBox).Content as Border != null)
                 ((sender as CheckBox).Content as Border).Background = col;
         }

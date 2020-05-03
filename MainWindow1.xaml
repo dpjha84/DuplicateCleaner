@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:DuplicateCleaner.UserControls"
         mc:Ignorable="d"
-        Title="Duplicate Cleaner" Height="350" Width="525" WindowState="Maximized" >
+        Title="Duplicate Remover Pro" Height="350" Width="525" WindowState="Maximized" Icon="..\images\cleaner.png" >
     <Window.Resources>
 
     </Window.Resources>
@@ -16,70 +16,66 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <Border Margin="5,0,5,0" Grid.Row="0" BorderBrush="Gray" Background="LightGray" BorderThickness="1">
+            <Border x:Name="topPanel" Visibility="Collapsed" Margin="5,0,5,0" Grid.Row="0" BorderBrush="Gray" Background="LightGray" BorderThickness="1">
                 <StackPanel Orientation="Horizontal" Margin="10">
-                    <Button x:Name="button" Height="40" Background="Green" FontWeight="DemiBold"  IsDefault="True" Content="Start Scan" Foreground="White" Click="BtnStart_Click"  Width="100"/>
-                    <Button x:Name="btnStop" Height="40" Background="Green" FontWeight="DemiBold"  IsDefault="True" Content="Stop Scan" Foreground="White" Click="btnStop_Click"  Margin="30,0,0,0" Width="100"/>
+                    <Button x:Name="button" Style="{StaticResource mainButton}" Height="40" IsDefault="True" Content="Start Scan" Click="BtnStart_Click"  Width="100"/>
                     <TextBlock x:Name="statusLabel" FontWeight="Bold" Foreground="Green" Margin="30,0,0,0" Width="100" VerticalAlignment="Center"/>
-                    <Grid Margin="20,0,20,0">
+                    <Grid Margin="20,0,20,0" x:Name="gridScanProgress" Visibility="Collapsed">
                         <ProgressBar Height="20" Width="200" Maximum="100" Name="progressBar" Minimum="0" />
-                        <TextBlock x:Name="txtProgress" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="White"/>
+                        <TextBlock x:Name="txtProgress" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="Black"/>
                     </Grid>
-                    <!--<TextBlock x:Name="fileCountLabel" FontWeight="Bold" Foreground="Green" Margin="30,0,0,0" Width="100" VerticalAlignment="Center"/>
-                    <TextBlock x:Name="timeTakenLabel" FontWeight="Bold" Foreground="Green"  Margin="30,0,0,0" Width="100" VerticalAlignment="Center"/>-->
-                    
-
                     <StackPanel Orientation="Horizontal">
-                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="Gray" />
+                        <Separator x:Name="sep" Visibility="Collapsed" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="Gray" />
                     </StackPanel>
-                    <Button x:Name="btnDelete" FontWeight="DemiBold" Click="btnDelete_Click" Background="DarkRed" Foreground="White" Content="Delete Duplicates" Margin="30,0,0,0" Width="120" />
+                    <Button x:Name="btnDelete" Visibility="Collapsed" Style="{StaticResource deleteButton}" Click="btnDelete_Click" Content="Delete Duplicates" Margin="30,0,0,0" Width="200" />
                     <TextBlock x:Name="statusDeleteLabel" FontWeight="Bold" Foreground="Green" Margin="30,0,0,0" Width="100" VerticalAlignment="Center"/>
 
-                    <Grid Margin="20,0,20,0">
+                    <Grid Margin="20,0,20,0" x:Name="gridDeleteProgress" Visibility="Collapsed">
                         <ProgressBar Height="20" Width="200" Maximum="100" Name="deleteProgressBar" Minimum="0" />
-                        <TextBlock x:Name="txtDeleteProgress" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="White" />
+                        <TextBlock x:Name="txtDeleteProgress" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="Black" />
                     </Grid>
-
-                    <TextBlock x:Name="spaceLabel" FontWeight="Bold" Foreground="Green"  Margin="20,0,0,0" Width="120" VerticalAlignment="Center"/>
-
-
-                    <StackPanel Orientation="Horizontal">
-                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="Gray" />
-                    </StackPanel>
-                    
-                    <Button x:Name="btnDetailPane" Click="btnDetailPane_Click" ToolTip="List View" Width="25" Height="25" Margin="30,0,0,0" BorderBrush="Green" BorderThickness="0">
-                        <Image x:Name="imgDetail" />
-                    </Button>
-                    <Button x:Name="btnSplitPane" Click="btnSplitPane_Click" Width="25" ToolTip="Split View" Height="25" Margin="5,0,0,0" BorderBrush="Green" BorderThickness="2">
-                        <Image x:Name="imgSplit" />
-                    </Button>
                 </StackPanel>
             </Border>
-            <TabControl Grid.Row="1" Name="tabControl">
+            <TabControl Grid.Row="1" Name="tabControl" Margin="5">
                 <TabItem>
                     <TabItem.Header>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Preferences" />
+                            <TextBlock Text="Home" Style="{StaticResource bigText}" />
                         </StackPanel>
                     </TabItem.Header>
-                    <controls:PreferenceControl/>
+                    <Border Background="LightSteelBlue">
+                        <StackPanel Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Image Source="..\images\cleaner.png" Height="200" Width="200" />
+                            <TextBlock FontWeight="Thin" FontSize="60" Foreground="Green" Text="Welcome to Duplicate Remover Pro" HorizontalAlignment="Center" />
+                            <TextBlock Margin="0,100,0,10" FontSize="20" Text="Let's set the scan crietria and start the scan to find duplicates in your system." HorizontalAlignment="Center" />
+                            <Button Style="{StaticResource mainButton}" Height="100" FontSize="25" Margin="0,20,0,0" Width="400" Content="Set Scan Criteria" Name="btnStartCriteria" Click="btnStartCriteria_Click" />
+                        </StackPanel>
+                    </Border>
                 </TabItem>
-                <TabItem>
+                <TabItem Visibility="Collapsed">
                     <TabItem.Header>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Duplicates" />
+                            <TextBlock Text="Scan Criteria" Style="{StaticResource bigText}" />
                         </StackPanel>
                     </TabItem.Header>
-                    <controls:DuplicatesControl x:Name="dupControl"/>
+                    <controls:PreferenceControl />
                 </TabItem>
-            <TabItem>
-                <TabItem.Header>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Cleanup Summary" />
-                    </StackPanel>
-                </TabItem.Header>
-                <controls:CleanupSummary x:Name="cleanupControl"/>
-            </TabItem>
+                <TabItem Visibility="Collapsed">
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Duplicate Preview" Style="{StaticResource bigText}" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <controls:DuplicatesControl x:Name="dupControl" />
+                </TabItem>
+                <TabItem Visibility="Collapsed">
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Cleanup Summary" Style="{StaticResource bigText}" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <controls:CleanupSummary x:Name="cleanupControl" />
+                </TabItem>
             </TabControl>
         </Grid>
     </Grid>

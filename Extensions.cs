@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
@@ -92,7 +90,7 @@ namespace DuplicateCleaner
                 {
                     map.Add(path);
                 }
-                else if(path.Exclude)
+                else if (path.Exclude)
                 {
                     result.ExcludedInTreeList.Add(path.Name);
                 }
@@ -104,7 +102,7 @@ namespace DuplicateCleaner
         {
             public bool Equals(Location x, Location y)
             {
-                return y.Name.IndexOf(x.Name, StringComparison.OrdinalIgnoreCase) >= 0;
+                return !x.Exclude && y.Name.IndexOf(x.Name, StringComparison.OrdinalIgnoreCase) >= 0;
             }
 
             public int GetHashCode(Location obj)

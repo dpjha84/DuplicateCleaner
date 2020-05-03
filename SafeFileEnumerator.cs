@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace DuplicateCleaner
 {
@@ -30,11 +29,12 @@ namespace DuplicateCleaner
             }
         }
 
-        public static IEnumerable<string> EnumerateFiles(string path, SearchOption searchOpt, HashSet<string> extList, 
-            HashSet<string> exc, long minSize, long maxSize, DateTime? modifyAfter, DateTime? modifyBefore, bool includeHiddenFolders)
+        public static IEnumerable<string> EnumerateFiles(string path, SearchOption searchOpt, HashSet<string> extList,
+            HashSet<string> exc, long minSize, long maxSize, DateTime? modifyAfter, DateTime? modifyBefore, bool includeHiddenFolders, CancellationToken token)
         {
             try
             {
+                if (token.IsCancellationRequested) return Enumerable.Empty<string>();
                 var dir = new DirectoryInfo(path);
                 if (!includeHiddenFolders && (dir.Parent != null && dir.Attributes.HasFlag(FileAttributes.Hidden)))
                     return Enumerable.Empty<string>();
@@ -42,14 +42,12 @@ namespace DuplicateCleaner
                 var dirFiles = Enumerable.Empty<string>();
                 var dirName = Path.GetFileName(path);
                 if (exc.Contains(path)
-                    || exc.Where((x) => x.StartsWith(path.ToLowerInvariant() + "\\")).ToList().Count > 0
-                    //|| (!string.IsNullOrWhiteSpace(dirName) && dirName.StartsWith("$"))
-                    )
+                    || exc.Where((x) => x.StartsWith(path.ToLowerInvariant() + "\\")).ToList().Count > 0)
                     return dirFiles;
                 if (searchOpt == SearchOption.AllDirectories)
                 {
                     dirFiles = Directory.EnumerateDirectories(path)
-                                        .SelectMany(x => EnumerateFiles(x, searchOpt, extList, exc, minSize, maxSize, modifyAfter, modifyBefore, includeHiddenFolders));
+                                        .SelectMany(x => EnumerateFiles(x, searchOpt, extList, exc, minSize, maxSize, modifyAfter, modifyBefore, includeHiddenFolders, token));
                 }
                 return dirFiles.Concat(Directory.EnumerateFiles(path, "*.*")
                     .Where(file => (MatchingExtension(file, extList)

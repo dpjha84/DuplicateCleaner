@@ -1,8 +1,6 @@
 ﻿using Microsoft.VisualBasic.FileIO;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace DuplicateCleaner
 {
@@ -14,21 +12,21 @@ namespace DuplicateCleaner
         {
             try
             {
-                _instance = JsonConvert.DeserializeObject<SearchInfo>(File.ReadAllText("setting.json"));
-            }
-            catch (Exception ex)
-            {
-                _instance = new SearchInfo();
-                _instance.ScanLocations = new List<Location>
+                _instance = new SearchInfo
                 {
-                    new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) },
-                    new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) },
-                    new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos) },
-                    new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) },
-                    new Location { Name = "E:\\" },
-                    new Location { Name = "E:\\Test\\Sub" },
+                    ScanLocations = new List<Location>
+                    {
+                        new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) },
+                        new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) },
+                        new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos) },
+                        new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) },
+                    }
                 };
-            }            
+            }
+            catch (Exception)
+            {
+
+            }
         }
 
         public static SearchInfo Instance => _instance;

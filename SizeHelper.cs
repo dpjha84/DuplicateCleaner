@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DuplicateCleaner
 {
@@ -26,9 +22,9 @@ namespace DuplicateCleaner
         {
             try
             {
-                 return new FileInfo(file).Length;
+                return new FileInfo(file).Length;
             }
-            catch(FileNotFoundException)
+            catch (FileNotFoundException)
             {
                 return -1;
             }
@@ -44,7 +40,7 @@ namespace DuplicateCleaner
         }
         public static long GetSizeInBytes(int val, string unit)
         {
-            switch(unit)
+            switch (unit)
             {
                 case "KB":
                     return val * 1024;

@@ -3,12 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:DuplicateCleaner.UserControls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="5" />
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid  Margin="10,10,0,10" Grid.Column="0">
@@ -27,34 +27,27 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0"  Text="Scan Locations" Style="{StaticResource PrefrenceHeader}"></TextBlock>
-                        <Button BorderThickness="0" Background="Transparent" Grid.Row="1" HorizontalAlignment="Left" Width="50" Height="50" Margin="10" Name="btnAddLocation" Click="btnAddLocation_Click">
-                            <Image x:Name="imgAddFolder" />
-                        </Button>
+                        <StackPanel Margin="0,0,0,10" Orientation="Horizontal" Grid.Row="1">
+                            <TextBlock Foreground="Gray" FontSize="16" Text="Add a folder to scan for duplicates. Once added scan locations would be listed below." VerticalAlignment="Center" />
+                            <Button BorderThickness="0" Background="Transparent"  HorizontalAlignment="Right" Width="50" Height="50" Margin="10" Name="btnAddLocation" Click="btnAddLocation_Click">
+                                <Image x:Name="imgAddFolder" />
+                            </Button>
+                        </StackPanel>
                         <ListView PreviewMouseWheel="lvLocations_PreviewMouseWheel" Name="lvLocations" Background="Transparent" Grid.ColumnSpan="2" BorderThickness="0" Grid.Row="2" ItemsSource="{Binding}" ItemContainerStyle="{StaticResource ListViewItemStyle1}">
                             <ListView.View>
                                 <GridView ColumnHeaderContainerStyle="{StaticResource myHeaderStyle}">
                                     <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}" />
-                                    <GridViewColumn Width="100">
+                                    <GridViewColumn Width="180">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <CheckBox VerticalContentAlignment="Center" Content="Exclude" x:Name="chkExclude" Checked="chkExclude_Checked" Unchecked="chkExclude_Unchecked" IsChecked="{Binding Exclude}">
-                                                    <!--<Border Background="Gray" Height="20" Width="60">
-                                                        <TextBlock HorizontalAlignment="Center" Text="Exclude" Foreground="LightGray" FontSize="10" VerticalAlignment="Center" />
-                                                    </Border>-->
-                                                </CheckBox>
+                                                <CheckBox Content="Include with Subfolders" Checked="chkSubfolders_Checked" Unchecked="chkSubfolders_Unchecked" x:Name="chkSubfolders" IsChecked="{Binding IncludeSubfolders}" />
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-
-                                    <GridViewColumn Width="100">
+                                    <GridViewColumn Width="80">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <!--<CheckBox Checked="chkSubfolders_Checked" Unchecked="chkSubfolders_Unchecked" Margin="10,0,0,10" x:Name="chkSubfolders" IsChecked="{Binding IncludeSubfolders}" >
-                                                    <Border Background="Gray" Height="20" Width="60">
-                                                        <TextBlock HorizontalAlignment="Center" Text="Subfolders" Foreground="LightGray" FontSize="10" VerticalAlignment="Center" />
-                                                    </Border>
-                                                </CheckBox>-->
-                                                <CheckBox Content="Subfolders" Checked="chkSubfolders_Checked" Unchecked="chkSubfolders_Unchecked" x:Name="chkSubfolders" IsChecked="{Binding IncludeSubfolders}" />
+                                                <CheckBox VerticalContentAlignment="Center" Content="Exclude" x:Name="chkExclude" Checked="chkExclude_Checked" Unchecked="chkExclude_Unchecked" IsChecked="{Binding Exclude}" />
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
@@ -86,8 +79,8 @@
                 </StackPanel>
             </Border>
         </Grid>
-
-        <Grid Grid.Column="1" Margin="10">
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="Transparent" />
+        <Grid Grid.Column="2" Margin="10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
@@ -128,8 +121,8 @@
                     <StackPanel Margin="20">
                         <Grid Margin="20">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="8*" />
-                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="12*" />
+                                <ColumnDefinition Width="4*" />
                                 <ColumnDefinition Width="22*" />
                             </Grid.ColumnDefinitions>
                             <CheckBox Style="{StaticResource bigCheckbox}" x:Name="chkMinSize" Content="Min Size" VerticalAlignment="Center" Checked="chkMinSize_Checked" Unchecked="chkMinSize_Unchecked" Grid.Column="0"></CheckBox>
@@ -142,8 +135,8 @@
                         </Grid>
                         <Grid Margin="20">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="8*" />
-                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="12*" />
+                                <ColumnDefinition Width="4*" />
                                 <ColumnDefinition Width="22*" />
                             </Grid.ColumnDefinitions>
                             <CheckBox Style="{StaticResource bigCheckbox}" x:Name="chkMaxSize" VerticalAlignment="Center" Content="Max Size" Checked="chkMaxSize_Checked" Grid.Column="0" Unchecked="chkMaxSize_Unchecked"></CheckBox>
@@ -164,8 +157,8 @@
                     <StackPanel Margin="20">
                         <Grid Margin="20">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="10*" />
-                                <ColumnDefinition Width="24*" />
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="3*" />
                             </Grid.ColumnDefinitions>
                             <CheckBox Style="{StaticResource bigCheckbox}" x:Name="chkMinModifyDate" Content="Modified After" VerticalAlignment="Center" Checked="chkMinModifyDate_Checked" Unchecked="chkMinModifyDate_Unchecked" Grid.Column="0"></CheckBox>
                             <DatePicker Name="dpMinModifyDate" SelectedDateChanged="dpMinModifyDate_SelectedDateChanged" IsEnabled="False" DisplayDate="2019-01-01" Grid.Column="1" HorizontalAlignment="Left">
@@ -178,8 +171,8 @@
                         </Grid>
                         <Grid Margin="20">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="10*" />
-                                <ColumnDefinition Width="24*" />
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="3*" />
                             </Grid.ColumnDefinitions>
                             <CheckBox Style="{StaticResource bigCheckbox}" x:Name="chkMaxModifyDate" VerticalAlignment="Center" Content="Modified Before" Checked="chkMaxModifyDate_Checked" Unchecked="chkMaxModifyDate_Unchecked"></CheckBox>
                             <DatePicker Name="dpMaxModifyDate" SelectedDateChanged="dpMaxModifyDate_SelectedDateChanged" IsEnabled="False" HorizontalAlignment="Left" DisplayDate="2019-01-01" Grid.Column="2" >

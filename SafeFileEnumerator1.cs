@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DuplicateCleaner
 {
@@ -65,9 +63,9 @@ namespace DuplicateCleaner
                     bool match = true;
                     foreach (var filter in searchFileInfo.FileMatchers)
                     {
-                        if (!filter.Match(file)) { match = false; break; }                         
+                        if (!filter.Match(file)) { match = false; break; }
                     }
-                    if(match)
+                    if (match)
                         dirFiles = dirFiles.Concat(new[] { file });
                 }
                 return dirFiles;

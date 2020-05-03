@@ -35,6 +35,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>images\cleaner.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -69,6 +72,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DuplicateFinder.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FileInfoWrapper.cs" />
     <Compile Include="HashHelper.cs" />
@@ -92,10 +96,6 @@
       <DependentUpon>PreferenceControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="SearchInfo.cs" />
-    <Page Include="Dictionary1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Home.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -150,23 +150,19 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="images\Details.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="images\images.png" />
-    <Resource Include="images\img_216744.png" />
-    <Resource Include="images\split.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="images\AddFolder.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="images\AddFolder2.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\Remove.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\folder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <SplashScreen Include="images\cleaner.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\cleaner.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
