@@ -1,0 +1,45 @@
+﻿<UserControl x:Class="DuplicateCleaner.UserControls.WelcomeControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DuplicateCleaner.UserControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Border Background="LightSteelBlue">
+            <StackPanel Margin="20"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <Image Source="..\images\cleaner.png"
+                       Height="200"
+                       Width="200" />
+                <TextBlock FontWeight="Thin"
+                           FontSize="60"
+                           Foreground="Green"
+                           Text="Welcome to Duplicate Remover Pro"
+                           HorizontalAlignment="Center" />
+                <TextBlock Margin="0,100,0,10"
+                           FontSize="20"
+                           Text="Let's set the scan crietria and start the scan to find duplicates in your system."
+                           HorizontalAlignment="Center" />
+                <Button Style="{StaticResource mainButton}"
+                        Height="100"
+                        FontSize="25"
+                        Margin="0,20,0,20"
+                        Width="400"
+                        Content="Set Scan Criteria"
+                        Name="btnStartCriteria"
+                        Click="btnStartCriteria_Click" />
+                <CheckBox x:Name="chkShowWelcomePage"
+                          Content="Show this page at startup"
+                          Style="{StaticResource bigCheckbox}"
+                          VerticalContentAlignment="Bottom"
+                          VerticalAlignment="Bottom"
+                          HorizontalAlignment="Center"
+                          Checked="chkShowWelcomePage_Checked"
+                          Unchecked="chkShowWelcomePage_Unchecked" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

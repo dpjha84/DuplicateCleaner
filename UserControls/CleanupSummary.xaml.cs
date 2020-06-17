@@ -2,11 +2,16 @@
 
 namespace DuplicateCleaner.UserControls
 {
+    public partial class BaseControl : UserControl
+    {
+
+    }
     /// <summary>
     /// Interaction logic for DuplicatesControl.xaml
     /// </summary>
-    public partial class CleanupSummary : UserControl
+    public partial class CleanupSummary : BaseControl
     {
+        public DuplicatesControl dupControl { get; set; }
         string _size;
         public string DeletedSize
         {
@@ -23,6 +28,20 @@ namespace DuplicateCleaner.UserControls
         public CleanupSummary()
         {
             InitializeComponent();
+            Loaded += CleanupSummary_Loaded;
+        }
+        bool attached = false;
+        private void CleanupSummary_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if(!attached)
+                dupControl.OnDeleteCompleted += DupControl_OnDeleteCompleted;
+        }
+
+        private void DupControl_OnDeleteCompleted(object sender, DeleteCompletedArgs e)
+        {
+            attached = true;
+            DeletedSize = e.DeletedSize;
+            dgDeleted.ItemsSource = e.DeletedFiles;
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿<Application x:Class="DuplicateCleaner.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="MainWindow1.xaml">
+             StartupUri="MainWindow.xaml">
     <Application.Resources>
         <Style x:Key="mainButton" TargetType="Button">
             <Setter Property="Background" Value="Green" />

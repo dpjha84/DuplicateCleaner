@@ -73,16 +73,17 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DuplicateFinder.cs" />
+    <Compile Include="EventArgs.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="FileHelper.cs" />
     <Compile Include="FileInfoWrapper.cs" />
     <Compile Include="HashHelper.cs" />
     <Compile Include="Home.xaml.cs">
       <DependentUpon>Home.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainWindow1.xaml.cs">
-      <DependentUpon>MainWindow1.xaml</DependentUpon>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SafeFileEnumerator1.cs" />
     <Compile Include="SafeFileEnumerator.cs" />
     <Compile Include="SearchFileInfo.cs" />
     <Compile Include="SizeHelper.cs" />
@@ -96,11 +97,17 @@
       <DependentUpon>PreferenceControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="SearchInfo.cs" />
+    <Compile Include="UserControls\TopPanel.xaml.cs">
+      <DependentUpon>TopPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\WelcomeControl.xaml.cs">
+      <DependentUpon>WelcomeControl.xaml</DependentUpon>
+    </Compile>
     <Page Include="Home.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow1.xaml">
+    <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -117,6 +124,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\PreferenceControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\TopPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\WelcomeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,4 +1,5 @@
-﻿<UserControl x:Class="DuplicateCleaner.UserControls.CleanupSummary"
+﻿<uc:BaseControl x:Class="DuplicateCleaner.UserControls.CleanupSummary"
+                          xmlns:uc="clr-namespace:DuplicateCleaner.UserControls"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -18,4 +19,4 @@
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
-</UserControl>
+</uc:BaseControl>

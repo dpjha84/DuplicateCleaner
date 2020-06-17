@@ -8,46 +8,46 @@ namespace DuplicateCleaner
 {
     public class DuplicateFinder
     {
-        DataGrid dg;
-        readonly ConcurrentDictionary<string, List<FileInfoWrapper>> dupDataDict = new ConcurrentDictionary<string, List<FileInfoWrapper>>();
-        List<FileInfoWrapper> dupList = new List<FileInfoWrapper>();
-        TextBlock timeTakenLabel, fileCountLabel;
-        private long? lowestBreakIndex = null;
-        MainWindow1 mainWindow;
-        public void BtnStop_ClickWithPause(MainWindow1 main)
-        {
-            if (main.button.Content.ToString() == "Start Scan") return;
-            ResetLabels(timeTakenLabel, fileCountLabel);
-            main.terminated = true;
-            main.processing = false;
-            main.paused = false;
-            lowestBreakIndex = null;
-            FlushResult(true);
-        }
+        //DataGrid dg;
+        //readonly ConcurrentDictionary<string, List<FileInfoWrapper>> dupDataDict = new ConcurrentDictionary<string, List<FileInfoWrapper>>();
+        //List<FileInfoWrapper> dupList = new List<FileInfoWrapper>();
+        //TextBlock timeTakenLabel, fileCountLabel;
+        //private long? lowestBreakIndex = null;
+        //MainWindow1 mainWindow;
+        //public void BtnStop_ClickWithPause(MainWindow1 main)
+        //{
+        //    if (main.button.Content.ToString() == "Start Scan") return;
+        //    ResetLabels(timeTakenLabel, fileCountLabel);
+        //    main.terminated = true;
+        //    main.processing = false;
+        //    main.paused = false;
+        //    lowestBreakIndex = null;
+        //    FlushResult(true);
+        //}
 
-        private void ResetLabels(params TextBlock[] labels)
-        {
-            foreach (var item in labels)
-            {
-                item.Text = "";
-            }
-        }
+        //private void ResetLabels(params TextBlock[] labels)
+        //{
+        //    foreach (var item in labels)
+        //    {
+        //        item.Text = "";
+        //    }
+        //}
 
-        void FlushResult(bool terminated)
-        {
-            mainWindow.progressBar.Value = 100;
-            mainWindow.txtProgress.Text = "100%";
-            dupList = AttachGroupAndFlattenList(dupDataDict.Values.OrderByDescending(x => x.Sum(z => z.Length)), true);
-            dg.ItemsSource = dupList;
-            mainWindow.statusLabel.Text = terminated ? "Scan stopped" : "Scan completed";
-            fileCountLabel.Text = dupDataDict.Count + " duplicate(s)";
-            //timeTakenLabel.Text = $"Time: {timeTaken.ToHumanTimeString()}";
-            mainWindow.button.Content = "Start Scan";
-            //currentFileLabel.Text = "";
-            mainWindow.btnDelete.Visibility = Visibility.Visible;
-            mainWindow.sep.Visibility = Visibility.Visible;
-            mainWindow.terminated = false;
-        }
+        //void FlushResult(bool terminated)
+        //{
+        //    mainWindow.progressBar.Value = 100;
+        //    mainWindow.txtProgress.Text = "100%";
+        //    dupList = AttachGroupAndFlattenList(dupDataDict.Values.OrderByDescending(x => x.Sum(z => z.Length)), true);
+        //    dg.ItemsSource = dupList;
+        //    mainWindow.statusLabel.Text = terminated ? "Scan stopped" : "Scan completed";
+        //    fileCountLabel.Text = dupDataDict.Count + " duplicate(s)";
+        //    //timeTakenLabel.Text = $"Time: {timeTaken.ToHumanTimeString()}";
+        //    mainWindow.button.Content = "Start Scan";
+        //    //currentFileLabel.Text = "";
+        //    mainWindow.btnDelete.Visibility = Visibility.Visible;
+        //    mainWindow.sep.Visibility = Visibility.Visible;
+        //    mainWindow.terminated = false;
+        //}
 
         List<FileInfoWrapper> AttachGroupAndFlattenList(IEnumerable<List<FileInfoWrapper>> l, bool assist = false)
         {
@@ -72,7 +72,7 @@ namespace DuplicateCleaner
             return list;
         }
 
-        private void StartProcessWithPause(MainWindow1 main)
+        private void StartProcessWithPause(MainWindow main)
         {
             //if (!lowestBreakIndex.HasValue)
             //{

@@ -38,6 +38,7 @@ namespace DuplicateCleaner
         {
             return GetSizeInBytes(int.Parse(val), unit);
         }
+
         public static long GetSizeInBytes(int val, string unit)
         {
             switch (unit)

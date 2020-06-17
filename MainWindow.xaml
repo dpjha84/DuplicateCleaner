@@ -1,0 +1,56 @@
+﻿<Window x:Class="DuplicateCleaner.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:DuplicateCleaner.UserControls"
+        mc:Ignorable="d"
+        Title="Duplicate Remover Pro" Height="350" Width="525" WindowState="Maximized" Icon="..\images\cleaner.png" >
+    <Window.Resources>
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <controls:TopPanel x:Name="topPanelControl" Visibility="Collapsed" />
+            <TabControl Grid.Row="1" Name="tabControl" Margin="5">
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Home" Style="{StaticResource bigText}" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <controls:WelcomeControl x:Name="welcomeControl" />
+                </TabItem>
+                <TabItem Visibility="Collapsed">
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Scan Criteria" Style="{StaticResource bigText}" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <controls:PreferenceControl />
+                </TabItem>
+                <TabItem Visibility="Collapsed">
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Duplicate Preview" Style="{StaticResource bigText}" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <controls:DuplicatesControl x:Name="dupControl" />
+                </TabItem>
+                <TabItem Visibility="Collapsed">
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Cleanup Summary" Style="{StaticResource bigText}" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <controls:CleanupSummary x:Name="cleanupControl" />
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Grid>
+</Window>

@@ -3,18 +3,6 @@ using System.IO;
 
 namespace DuplicateCleaner
 {
-    public class FileEnumerator
-    {
-        public FileEnumerator()
-        {
-            //Directory.enum
-        }
-
-        //public static IEnumerable<string> EnumerateFiles(DirectorySearchInfo searchFileInfo)
-        //{
-        //    return SafeFileEnumerator1.EnumerateFiles(searchFileInfo);
-        //}
-    }
     public class DirectorySearchInfo
     {
         public string DirectoryName { get; set; }

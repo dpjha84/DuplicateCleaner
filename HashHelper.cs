@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -8,25 +10,88 @@ namespace DuplicateCleaner
 {
     public class HashHelper
     {
+        static Dictionary<string, Tuple<DateTime, string>> cache;
+
+        static HashHelper()
+        {
+            var cacheData = ReadCache().Result;
+            if (!string.IsNullOrWhiteSpace(cacheData))
+                cache = JsonConvert.DeserializeObject<Dictionary<string, Tuple<DateTime, string>>>(cacheData);
+            else
+                cache = new Dictionary<string, Tuple<DateTime, string>>();
+        }
+
+        public static async Task CacheHash()
+        {
+            Windows.Storage.StorageFolder storageFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            Windows.Storage.StorageFile sampleFile = await storageFolder.CreateFileAsync("hashcache.json",
+                    Windows.Storage.CreationCollisionOption.ReplaceExisting).AsTask().ConfigureAwait(false);
+
+            var data = JsonConvert.SerializeObject(cache);
+            await Windows.Storage.FileIO.WriteTextAsync(sampleFile, data).AsTask().ConfigureAwait(false);
+        }
+
+        static async Task<string> ReadCache()
+        {
+            Windows.Storage.StorageFolder storageFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            Windows.Storage.StorageFile sampleFile = await storageFolder.CreateFileAsync("hashcache.json",
+                    Windows.Storage.CreationCollisionOption.OpenIfExists).AsTask().ConfigureAwait(false); ;
+
+            var data = await Windows.Storage.FileIO.ReadTextAsync(sampleFile);
+            return data;
+        }
+
         public static string GetFileHash(string fileName)
         {
-            using (var md5 = MD5.Create())
+            var lastModifiedTime = new FileInfoWrapper(fileName).DateModified;
+            if (cache.ContainsKey(fileName))
             {
-                try
+                if (lastModifiedTime > cache[fileName].Item1)
+                    cache.Remove(fileName);
+                else
+                    return cache[fileName].Item2;
+            }
+            try
+            {
+                using (var md5 = MD5.Create())
                 {
-                    using (var stream = new BufferedStream(File.OpenRead(fileName), 2400000))
+                    const int kb = 1024;
+                    const int mb = kb * kb;
+                    var length = new FileInfo(fileName).Length;
+                    if (length > 100 * mb)
                     {
-                        return Encoding.Default.GetString(md5.ComputeHash(stream));
+                        int i = 1;
+                        const int bytesPerChunk = 4 * mb;
+                        const int chunkCount = 10;
+                        long chunkStartPosition = length / (chunkCount * mb);
+                        var sb = new StringBuilder();
+
+                        using (BinaryReader fileData = new BinaryReader(File.OpenRead(fileName)))
+                        {
+                            while (i <= chunkCount)
+                            {
+                                fileData.BaseStream.Position = chunkStartPosition * i * mb;
+                                var bytes = fileData.ReadBytes(bytesPerChunk);
+                                sb.Append(Encoding.Default.GetString(md5.ComputeHash(bytes)));
+                                i++;
+                            }
+                        }
+                        sb.Append(length);
+                        var data = sb.ToString();
+                        cache.Add(fileName, Tuple.Create(lastModifiedTime, data));
+                        return data;
                     }
-                    //using (var stream = File.OpenRead(fileName))
-                    //{
-                    //    return Encoding.Default.GetString(md5.ComputeHash(stream));
-                    //}
+                    using (var stream = File.OpenRead(fileName))
+                    {
+                        var data = Encoding.Default.GetString(md5.ComputeHash(stream));
+                        cache.Add(fileName, Tuple.Create(lastModifiedTime, data));
+                        return data;
+                    }
                 }
-                catch (Exception)
-                {
-                    return null;
-                }
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
 

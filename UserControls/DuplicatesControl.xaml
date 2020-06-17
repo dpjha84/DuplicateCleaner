@@ -46,8 +46,8 @@
                             <DataGridTemplateColumn.Header>
                                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                                 <TextBlock Text="Auto Select" HorizontalAlignment="Center" />
-                                        <ComboBox Margin="0,5,0,0" Width="100" x:Name="cmbAutoSelect" HorizontalAlignment="Center" SelectedIndex="0" SelectionChanged="cmbAutoSelect_SelectionChanged">
-                                            <ComboBoxItem Content="Newest Files" />
+                                        <ComboBox Margin="0,5,0,0" Width="130" x:Name="cmbAutoSelect" HorizontalAlignment="Center" SelectedIndex="0" SelectionChanged="cmbAutoSelect_SelectionChanged">
+                                            <ComboBoxItem Content="Older files in group" />
                                             <ComboBoxItem Content="All" />
                                             <ComboBoxItem Content="None" />
                                         </ComboBox>

@@ -20,7 +20,20 @@ namespace DuplicateCleaner.UserControls
     {
         CancellationTokenSource cts;
         TimeSpan timeTaken = TimeSpan.Zero;
-        List<string> deleteList = new List<string>();
+        readonly List<string> deleteList = new List<string>();
+        public delegate void ScanCompletedDelegate(EventArgs e);
+
+        public delegate void ScanInitiatingDelegate(EventArgs e);
+        public event ScanInitiatingDelegate OnScanInitiated;
+
+        public event EventHandler<EventArgs> OnFileCountFetched;
+        public event EventHandler<ScanProgressingArgs> OnScanProgressing;
+        public event EventHandler<DeleteProgressingArgs> OnDeleteProgressing;
+        public event EventHandler<ScanCompletedArgs> OnScanCompleted;
+        public event EventHandler<DeleteCompletedArgs> OnDeleteCompleted;
+        public event EventHandler<EventArgs> OnScanStopping;
+        public event EventHandler<EventArgs> OnDeleteInitiated;
+        public event EventHandler<DeleteSizeChangedArgs> OnDeleteSizeChanged;
         private long sizeBytes = 0;
         public long SizeBytes
         {
@@ -28,8 +41,7 @@ namespace DuplicateCleaner.UserControls
             set
             {
                 sizeBytes = value;
-                if (main != null)
-                    main.btnDelete.Content = $"Delete Duplicates ({SizeHelper.Suffix(sizeBytes)})";
+                OnDeleteSizeChanged?.Invoke(this, new DeleteSizeChangedArgs { NewSize = SizeHelper.Suffix(sizeBytes) });
             }
         }
         readonly ConcurrentDictionary<string, List<FileInfoWrapper>> dupDataDict = new ConcurrentDictionary<string, List<FileInfoWrapper>>();
@@ -41,7 +53,8 @@ namespace DuplicateCleaner.UserControls
 
         readonly SearchInfo searchInfo;
         bool imagePreview = true;
-        public MainWindow1 main { get; set; }
+        public MainWindow main { get; set; }
+        public TopPanel topPanel { get; set; }
         public CleanupSummary cleanupWindow { get; set; }
 
         public DuplicatesControl()
@@ -52,10 +65,69 @@ namespace DuplicateCleaner.UserControls
             dg.ItemsSource = dupList;
             this.Loaded += DuplicatesControl_Loaded;
         }
+        bool attached = false;
+        private void TopPanel_OnScanStared(object sender, EventArgs e)
+        {
+            attached = true;
+            StartScan();
+        }
 
         private void DuplicatesControl_Loaded(object sender, RoutedEventArgs e)
         {
+            if (!attached)
+            {
+                topPanel.OnScanStared += TopPanel_OnScanStared;
+                topPanel.OnScanStopped += TopPanel_OnScanStopped;
+                topPanel.OnDeleteStared += TopPanel_OnDeleteStared;
+            }
             ResetGrid();
+        }
+
+        private void TopPanel_OnDeleteStared(object sender, EventArgs e)
+        {
+            if (SizeBytes == 0) return;
+            Task.Run(() =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    OnDeleteInitiated(this, new EventArgs());
+                    long deleted = 0;
+                    var files = new List<DeletedFile>();
+                    foreach (var item in deleteList)
+                    {
+                        try
+                        {
+                            deleted += new FileInfo(item).Length;
+                            if (SizeBytes > 0)
+                            {
+                                OnDeleteProgressing(this, new DeleteProgressingArgs { CurrentProgress = (deleted * 100) / SizeBytes });
+                            }
+                            files.Add(new DeletedFile
+                            {
+                                Name = item,
+                                ActionTaken = searchInfo.DeleteOption == RecycleOption.SendToRecycleBin ?
+                                "Moved to Recycle Bin" : "Deleted Permanently"
+                            });
+                            FileSystem.DeleteFile(item, UIOption.OnlyErrorDialogs, searchInfo.DeleteOption, UICancelOption.DoNothing);
+                        }
+                        catch (Exception)
+                        {
+                        }
+                    }
+                    SizeBytes = 0;
+                    OnDeleteCompleted(this, new DeleteCompletedArgs { DeletedSize = SizeHelper.Suffix(deleted), DeletedFiles = files});                    
+                }
+                );
+            }
+            );
+        }
+
+        private void TopPanel_OnScanStopped(object sender, EventArgs e)
+        {
+            Reset();
+            cts.Cancel();
+            main.terminated = true;
+            OnScanStopping(this, new EventArgs());
         }
 
         void Reset()
@@ -65,53 +137,31 @@ namespace DuplicateCleaner.UserControls
             currentFileLabel.Text = "";
             SizeBytes = 0;
             deleteList.Clear();
-            main.statusDeleteLabel.Text = "";
             cmbFileType.SelectedIndex = 0;
             cmbAutoSelect.SelectedIndex = 0;
             ImageControl.Source = null;
         }
 
 
-        internal void Scan()
+        internal void StartScan()
         {
             Reset();
-            if (main.button.Content.ToString() == "Start Scan")
-            {
-                main.statusLabel.Text = "Scanning...";
-                dupDataDict.Clear();
-                dg.ItemsSource = dupDataDict.Values;
-                cts = new CancellationTokenSource();
-                Task.Run(() => StartProcess(cts.Token));
-                main.button.Content = "Stop Scan";
-            }
-            else
-            {
-                main.statusLabel.Text = "Stopping...";
-                cts.Cancel();
-                main.terminated = true;
-                main.button.Content = "Start Scan";
-            }
+            OnScanInitiated(null);
+            dupDataDict.Clear();
+            dg.ItemsSource = dupDataDict.Values;
+            cts = new CancellationTokenSource();
+            Task.Run(() => StartProcess(cts.Token));
         }
 
         private void StartProcess(CancellationToken token)
         {
-            Dispatcher.Invoke(() =>
-            {
-                main.progressBar.IsIndeterminate = true;
-                main.txtProgress.Text = "Analyzing";
-            });
             var sw = Stopwatch.StartNew();
             var dataDict = new ConcurrentDictionary<string, List<FileInfoWrapper>>();
             var files = GetFiles(token);
             var fileCount = files.Count();
 
             int i = 1;
-            Dispatcher.Invoke(() =>
-            {
-                main.progressBar.IsIndeterminate = false;
-                main.progressBar.Value = 0;
-                main.txtProgress.Text = $"{main.progressBar.Value}%";
-            });
+            OnFileCountFetched(this, new EventArgs());
             ParallelLoopResult result = Parallel.ForEach(files, new ParallelOptions() { MaxDegreeOfParallelism = 4 },
                 (file1, state) =>
             {
@@ -137,18 +187,18 @@ namespace DuplicateCleaner.UserControls
                     }
                     Dispatcher.Invoke(() =>
                     {
-                        main.progressBar.Value = (i++) * 100 / fileCount;
-                        main.txtProgress.Text = $"{main.progressBar.Value}%";
+                        OnScanProgressing(this, new ScanProgressingArgs { CurrentProgress = (i++) * 100 / fileCount });
                         currentFileLabel.Text = file1;
                         fileCountLabel.Text = dupDataDict.Count + " duplicate(s)";
                     });
                 }
             }
             );
-            timeTaken = sw.Elapsed.Add(timeTaken);
+            timeTaken = sw.Elapsed;
             Dispatcher.Invoke(() =>
             {
                 FlushResult(main.terminated);
+                HashHelper.CacheHash().ConfigureAwait(false);
             });
         }
 
@@ -165,28 +215,36 @@ namespace DuplicateCleaner.UserControls
             foreach (var item in result.UniqueFolders.Where(x => !x.Exclude))
             {
                 if (token.IsCancellationRequested) break;
-                files = files.Concat(SafeFileEnumerator.EnumerateFiles(item.Name, item.IncludeSubfolders ? System.IO.SearchOption.AllDirectories : System.IO.SearchOption.TopDirectoryOnly,
-                new HashSet<string>(extensions), result.ExcludedInTreeList, searchInfo.MinSize, searchInfo.MaxSize, searchInfo.ModifiedAfter, searchInfo.ModifiedBefore, searchInfo.IncludeHiddenFolders, token));
+                var filter = new FileSearchFilter
+                {
+                    searchOpt = item.IncludeSubfolders ? System.IO.SearchOption.AllDirectories : System.IO.SearchOption.TopDirectoryOnly,
+                    extList = new HashSet<string>(extensions),
+                    exc = result.ExcludedInTreeList,
+                    minSize = searchInfo.MinSize,
+                    maxSize = searchInfo.MaxSize,
+                    modifyAfter = searchInfo.ModifiedAfter,
+                    modifyBefore = searchInfo.ModifiedBefore,
+                    includeHiddenFolders = searchInfo.IncludeHiddenFolders
+                };
+                files = files.Concat(SafeFileEnumerator.EnumerateFiles(item.Name, filter, token));
             }
             return files;
         }
 
         void FlushResult(bool terminated)
         {
-            main.progressBar.Value = 100;
-            main.txtProgress.Text = "100%";
             dupList = AttachGroupAndFlattenList(dupDataDict.Values.OrderByDescending(x => x.Sum(z => z.Length)), true);
             dg.ItemsSource = dupList;
-            main.statusLabel.Text = terminated ? "Scan stopped" : "Scan completed";
             fileCountLabel.Text = dupDataDict.Count + " duplicate(s)";
             timeTakenLabel.Text = $"Time: {timeTaken.ToHumanTimeString()}";
-            main.button.Content = "Start Scan";
             currentFileLabel.Text = "";
-            main.btnDelete.Visibility = Visibility.Visible;
-            main.sep.Visibility = Visibility.Visible;
             main.terminated = false;
+            OnScanCompleted(this, new ScanCompletedArgs 
+            { StatusLabelText = terminated ? "Scan stopped" : "Scan completed",
+             SizeToDelete = SizeBytes});
         }
 
+        
         List<FileInfoWrapper> AttachGroupAndFlattenList(IEnumerable<List<FileInfoWrapper>> l, bool assist = false)
         {
             int i = 0;
@@ -242,58 +300,7 @@ namespace DuplicateCleaner.UserControls
             {
                 HandleFileCheck(file, ((ToggleButton)sender).IsChecked == true);
             }
-        }
-
-        public void btnDelete_Click(object sender, RoutedEventArgs e)
-        {
-            if (SizeBytes == 0) return;
-            main.gridDeleteProgress.Visibility = Visibility.Visible;
-            Task.Run(() =>
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    main.statusDeleteLabel.Text = "Deleting...";
-                    long deleted = 0;
-                    var files = new List<DeletedFile>();
-                    foreach (var item in deleteList)
-                    {
-                        try
-                        {
-                            deleted += new FileInfo(item).Length;
-                            if (SizeBytes > 0)
-                            {
-                                main.deleteProgressBar.Value = (deleted * 100) / SizeBytes;
-                                main.txtDeleteProgress.Text = $"{main.deleteProgressBar.Value}%";
-                            }
-                            files.Add(new DeletedFile
-                            {
-                                Name = item,
-                                ActionTaken = searchInfo.DeleteOption == RecycleOption.SendToRecycleBin ?
-                                "Moved to Recycle Bin" : "Deleted Permanently"
-                            });
-                            FileSystem.DeleteFile(item, UIOption.OnlyErrorDialogs, searchInfo.DeleteOption, UICancelOption.DoNothing);
-                        }
-                        catch (Exception)
-                        {
-                        }
-                    }
-                    main.deleteProgressBar.Value = 100;
-                    main.txtDeleteProgress.Text = $"100%";
-                    main.statusDeleteLabel.Text = "Delete completed";
-                    cleanupWindow.DeletedSize = SizeHelper.Suffix(deleted);
-                    cleanupWindow.dgDeleted.ItemsSource = files;
-                    (main.tabControl.Items[3] as TabItem).Visibility = Visibility.Visible;
-                    main.tabControl.SelectedIndex = 3;
-                }
-                );
-            }
-            );
-        }
-
-        public void DetailPaneClick(Button btnDetailPane, Button btnSplitPane)
-        {
-            ResetGrid();
-        }
+        }        
 
         void ResetGrid()
         {
@@ -304,20 +311,6 @@ namespace DuplicateCleaner.UserControls
             previewGrid.Visibility = Visibility.Collapsed;
         }
 
-        public void SplitPaneClick(Button btnDetailPane, Button btnSplitPane)
-        {
-            grid1.ColumnDefinitions.Clear();
-            var cd1 = new ColumnDefinition() { Width = new GridLength(2, GridUnitType.Star) };
-            var cd2 = new ColumnDefinition() { Width = new GridLength(5, GridUnitType.Pixel) };
-            var cd3 = new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) };
-            grid1.ColumnDefinitions.Add(cd1);
-            grid1.ColumnDefinitions.Add(cd2);
-            grid1.ColumnDefinitions.Add(cd3);
-            previewGrid.Visibility = Visibility.Visible;
-            btnDetailPane.BorderThickness = new Thickness(0);
-            btnSplitPane.BorderThickness = new Thickness(2);
-        }
-
         private void dg_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var fileInfo = dg.SelectedItem as FileInfoWrapper;
@@ -326,28 +319,25 @@ namespace DuplicateCleaner.UserControls
                 if (imagePreview && pics.Contains(Path.GetExtension(fileInfo.FullName)))
                 {
                     ShowPreviewGrid();
-                }
-                else
-                    ResetGrid();
-                try
-                {
-                    //ImageControl.Source = new BitmapImage(new Uri(fileInfo.FullName));
-                    using (var ms = new MemoryStream())
+                    try
                     {
-                        using (var stream = File.OpenRead(fileInfo.FullName))
+                        using (var ms = new MemoryStream())
                         {
-                            stream.CopyTo(ms);
+                            using (var stream = File.OpenRead(fileInfo.FullName))
+                            {
+                                stream.CopyTo(ms);
+                            }
+                            ImageControl.Source = BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                         }
-                        ImageControl.Source = BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                    }
+                    catch (Exception)
+                    {
                     }
                 }
-                catch (Exception)
-                {
-                }
+                else
+                    ResetGrid();                
             }
         }
-
-
 
         void ShowPreviewGrid()
         {
@@ -380,7 +370,7 @@ namespace DuplicateCleaner.UserControls
             var autoSelect = (cmbAutoSelect.SelectedItem as ComboBoxItem).Content.ToString();
             switch (autoSelect)
             {
-                case "Newest Files":
+                case "Older files in group":
                     AutoSelectNewestFiles();
                     break;
                 case "All":

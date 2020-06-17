@@ -1,35 +1,46 @@
 ﻿using Microsoft.VisualBasic.FileIO;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace DuplicateCleaner
 {
     public class SearchInfo
     {
-        static readonly SearchInfo _instance;
+        const string settingFile = "setting.json";
 
         static SearchInfo()
         {
             try
             {
-                _instance = new SearchInfo
-                {
-                    ScanLocations = new List<Location>
-                    {
-                        new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) },
-                        new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) },
-                        new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos) },
-                        new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) },
-                    }
-                };
+                var cacheData = FileHelper.Read(settingFile).Result;
+                Instance = string.IsNullOrWhiteSpace(cacheData) ? DefaultInstance : JsonConvert.DeserializeObject<SearchInfo>(cacheData);
             }
             catch (Exception)
             {
-
+                Instance = DefaultInstance;
             }
         }
 
-        public static SearchInfo Instance => _instance;
+        static SearchInfo DefaultInstance { get; } = new SearchInfo
+        {
+            ScanLocations = new List<Location>
+                {
+                    new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) },
+                    new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) },
+                    new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos) },
+                    new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) },
+                }
+        };
+
+        public static void UpdateSetting()
+        {
+            FileHelper.Write(settingFile, JsonConvert.SerializeObject(Instance)).ConfigureAwait(false);
+        }
+
+        public static SearchInfo Instance { get; private set; }
 
         public List<Location> ScanLocations { get; set; }
 
@@ -52,6 +63,8 @@ namespace DuplicateCleaner
         public DateTime? ModifiedBefore { get; set; }
 
         public RecycleOption DeleteOption { get; set; } = RecycleOption.SendToRecycleBin;
+
+        public bool ShowWelcomePageAtStartup { get; set; } = true;
     }
 
     public class Location
