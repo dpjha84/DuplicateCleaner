@@ -54,18 +54,24 @@ namespace DuplicateCleaner
 
         public bool IncludeHiddenFolders { get; set; }
 
-        public long MinSize { get; set; }
+        public long MinSize { get; set; } = 1024 * 1024;
 
-        public long MaxSize { get; set; }
+        public long MaxSize { get; set; } = -1;// = new FileSize(0, "KB");
 
         public DateTime? ModifiedAfter { get; set; }
 
         public DateTime? ModifiedBefore { get; set; }
 
-        public RecycleOption DeleteOption { get; set; } = RecycleOption.SendToRecycleBin;
+        public DeleteOption DeleteOption { get; set; } = DeleteOption.SendToRecycleBin;
 
         public bool ShowWelcomePageAtStartup { get; set; } = true;
+
+        public DuplicationMarkingCriteria DupCriteria { get; set; }
+
+        public bool CacheHashData { get; set; } = true;
     }
+
+    public enum DuplicationMarkingCriteria { FileContent, FileName }
 
     public class Location
     {
@@ -78,5 +84,78 @@ namespace DuplicateCleaner
         public bool ExcludedInTree { get; set; }
 
         public string RemoveIcon { get; set; } = "..\\..\\images\\Remove.png";
+    }
+
+    public enum DeleteOption { SendToRecycleBin, PermanentDelete };
+
+    public class FileSize
+    {
+        int _val;
+        public int Val 
+        { 
+            get { return _val; }
+            set
+            {
+                var sz = GetSize(value, Unit);
+                if (sz <= 0) throw new ArgumentException("Max File Size exceeded");
+                _val = value;
+            }
+        }
+
+        string _unit;
+        public string Unit
+        {
+            get { return _unit; }
+            set
+            {
+                var sz = GetSize(Val, value);
+                if (sz <= 0) throw new ArgumentException("Max File Size exceeded");
+                _unit = value;
+            }
+        }
+
+        public FileSize(long bytes)
+        {
+
+        }
+
+        public FileSize(int val, string unit)
+        {
+            _val = val;
+            _unit = unit;
+            //if (unit == "GB" && val > 5) throw new ArgumentException("Max File Size exceeded");
+            //Val = val;
+            //Unit = unit;
+        }
+
+        private long GetSize(int val, string unit)
+        {
+            switch (unit)
+            {
+                case "KB":
+                    return val * 1024;
+                case "MB":
+                    return val * 1024 * 1024;
+                case "GB":
+                    return val * 1024 * 1024 * 1024;
+            }
+            return 0;
+        }
+
+        long _size = 0;
+
+        public void SetZero()
+        {
+            _size = 0;
+        }
+
+        public long Size
+        {
+            get
+            {
+                _size = GetSize(Val, Unit);
+                return _size;
+            }
+        }
     }
 }

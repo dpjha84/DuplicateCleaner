@@ -14,25 +14,25 @@ namespace DuplicateCleaner
             {
                 if (token.IsCancellationRequested) return Enumerable.Empty<string>();
                 var dir = new DirectoryInfo(path);
-                if (!filter.includeHiddenFolders && (dir.Parent != null && dir.Attributes.HasFlag(FileAttributes.Hidden)))
+                if (!filter.IncludeHiddenFolders && (dir.Parent != null && dir.Attributes.HasFlag(FileAttributes.Hidden)))
                     return Enumerable.Empty<string>();
 
                 var dirFiles = Enumerable.Empty<string>();
                 var dirName = Path.GetFileName(path);
-                if (filter.exc.Contains(path)
-                    || filter.exc.Where((x) => x.StartsWith(path.ToLowerInvariant() + "\\")).ToList().Count > 0)
+                if (filter.ExcludedList.Contains(path)
+                    || filter.ExcludedList.Where((x) => x.StartsWith(path.ToLowerInvariant() + "\\")).ToList().Count > 0)
                     return dirFiles;
-                if (filter.searchOpt == SearchOption.AllDirectories)
+                if (filter.SearchOption == SearchOption.AllDirectories)
                 {
                     dirFiles = Directory.EnumerateDirectories(path)
                                         .SelectMany(x => EnumerateFiles(x, filter, token));
                 }
                 return dirFiles.Concat(Directory.EnumerateFiles(path, "*.*")
-                    .Where(file => (MatchingExtension(file, filter.extList)
-                        && (filter.minSize == 0 || SizeHelper.GetSizeSafe(file) >= filter.minSize)
-                        && (filter.maxSize == 0 || SizeHelper.GetSizeSafe(file) <= filter.maxSize)
-                        && (filter.modifyAfter == null || new FileInfo(file).LastWriteTime >= filter.modifyAfter.Value)
-                        && (filter.modifyBefore == null || new FileInfo(file).LastWriteTime <= filter.modifyBefore.Value)
+                    .Where(file => (MatchingExtension(file, filter.ExtensionList)
+                        && (filter.MinSize == -1 || SizeHelper.GetSizeSafe(file) >= filter.MinSize)
+                        && (filter.MaxSize == -1 || SizeHelper.GetSizeSafe(file) <= filter.MaxSize)
+                        && (filter.ModifyAfter == null || new FileInfo(file).LastWriteTime >= filter.ModifyAfter.Value)
+                        && (filter.ModifyBefore == null || new FileInfo(file).LastWriteTime <= filter.ModifyBefore.Value)
                         )));
             }
             catch (UnauthorizedAccessException)

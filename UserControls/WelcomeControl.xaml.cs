@@ -20,16 +20,16 @@ namespace DuplicateCleaner.UserControls
     /// </summary>
     public partial class WelcomeControl : UserControl
     {
-        public delegate void ScanCriteriaClickedDelegate(object sender, EventArgs e);
-        public event ScanCriteriaClickedDelegate OnScanCriteriaClicked;
+        public event EventHandler<EventArgs> OnScanCriteriaClicked;
         public WelcomeControl()
         {
             InitializeComponent();
             chkShowWelcomePage.IsChecked = SearchInfo.Instance.ShowWelcomePageAtStartup;
         }
 
-        private void btnStartCriteria_Click(object sender, RoutedEventArgs e)
+        private async void btnStartCriteria_Click(object sender, RoutedEventArgs e)
         {
+            
             OnScanCriteriaClicked(this, new EventArgs());
         }
 

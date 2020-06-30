@@ -31,7 +31,7 @@
                            VerticalAlignment="Center" />
                 <Grid Margin="20,0,20,0"
                       x:Name="gridScanProgress"
-                      Visibility="Collapsed">
+                      Visibility="Hidden">
                     <ProgressBar Height="20"
                                  Width="200"
                                  Maximum="100"
@@ -45,12 +45,12 @@
                 </Grid>
                 <StackPanel Orientation="Horizontal">
                     <Separator x:Name="sep"
-                               Visibility="Collapsed"
+                               Visibility="Hidden"
                                Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
                                Background="Gray" />
                 </StackPanel>
                 <Button x:Name="btnDelete"
-                        Visibility="Collapsed"
+                        Visibility="Hidden"
                         Style="{StaticResource deleteButton}"
                         Click="btnDelete_Click"
                         Content="Delete Duplicates"
@@ -64,7 +64,7 @@
                            VerticalAlignment="Center" />
                 <Grid Margin="20,0,20,0"
                       x:Name="gridDeleteProgress"
-                      Visibility="Collapsed">
+                      Visibility="Hidden">
                     <ProgressBar Height="20"
                                  Width="200"
                                  Maximum="100"
@@ -76,6 +76,21 @@
                                FontWeight="DemiBold"
                                Foreground="Black" />
                 </Grid>
+                <StackPanel Orientation="Horizontal">
+                    <Separator x:Name="sep1"
+                               Visibility="Hidden"
+                               Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
+                               Background="Gray" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                <Button x:Name="btnHelp"
+                        Visibility="Visible"
+                        Style="{StaticResource deleteButton}"
+                            Click="btnHelp_Click"
+                        Content="Help and Feedback"
+                        Margin="30,0,0,0"
+                        Width="150" HorizontalContentAlignment="Right"/>
+                </StackPanel>
             </StackPanel>
         </Border>
     </Grid>

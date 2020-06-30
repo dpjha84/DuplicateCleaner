@@ -17,9 +17,9 @@ namespace DuplicateCleaner
             welcomeControl.OnScanCriteriaClicked += WelcomeControl_OnScanCriteriaClicked;
             topPanelControl.dupControl = dupControl;
             topPanelControl.OnScanStared += TopPanel_OnScanStared;
-            dupControl.main = this;
-            dupControl.cleanupWindow = cleanupControl;
-            dupControl.topPanel = topPanelControl;
+            dupControl.Main = this;
+            dupControl.CleanupWindow = cleanupControl;
+            dupControl.TopPanel = topPanelControl;
             dupControl.OnDeleteCompleted += DupControl_OnDeleteCompleted;
             cleanupControl.dupControl = dupControl;
         }

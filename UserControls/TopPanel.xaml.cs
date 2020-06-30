@@ -20,7 +20,6 @@ namespace DuplicateCleaner.UserControls
     /// </summary>
     public partial class TopPanel : UserControl
     {
-        public delegate void StartScanDelegate(object sender, EventArgs e);
         public event EventHandler<EventArgs> OnScanStared;
         public event EventHandler<EventArgs> OnScanStopped;
         public event EventHandler<EventArgs> OnDeleteStared;
@@ -70,6 +69,7 @@ namespace DuplicateCleaner.UserControls
         private void DupControl_OnScanStopping(object sender, EventArgs e)
         {
             statusLabel.Text = "Stopping...";
+            button.IsEnabled = false;
             button.Content = "Start Scan";
         }
 
@@ -80,13 +80,14 @@ namespace DuplicateCleaner.UserControls
                 progressBar.Value = 100;
                 txtProgress.Text = "100%";
                 statusLabel.Text = e.StatusLabelText;
+                button.IsEnabled = true;
                 button.Content = "Start Scan";
                 btnDelete.Visibility = Visibility.Visible;
                 sep.Visibility = Visibility.Visible;
                 if (e.SizeToDelete == 0)
                 {
-                    btnDelete.Visibility = Visibility.Collapsed;
-                    sep.Visibility = Visibility.Collapsed;
+                    btnDelete.Visibility = Visibility.Hidden;
+                    sep.Visibility = Visibility.Hidden;
                 }
                 else
                 {
@@ -116,7 +117,7 @@ namespace DuplicateCleaner.UserControls
             });
         }
 
-        private void DupControl_OnScanInitiated(EventArgs e)
+        private void DupControl_OnScanInitiated(object sender, EventArgs e)
         {
             Dispatcher.Invoke(() =>
             {
@@ -132,9 +133,12 @@ namespace DuplicateCleaner.UserControls
             statusLabel.Text = "";
             statusDeleteLabel.Text = "";
             gridScanProgress.Visibility = Visibility.Visible;
-            gridDeleteProgress.Visibility = Visibility.Collapsed;
+            gridDeleteProgress.Visibility = Visibility.Hidden;
+            sep1.Visibility = Visibility.Hidden;
             deleteProgressBar.Value = 0;
             txtDeleteProgress.Text = "";
+            btnDelete.Visibility = Visibility.Hidden;
+            sep.Visibility = Visibility.Hidden;
             if (button.Content.ToString() == "Start Scan")
                 OnScanStared(this, new EventArgs());
             else
@@ -144,7 +148,14 @@ namespace DuplicateCleaner.UserControls
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             gridDeleteProgress.Visibility = Visibility.Visible;
+            sep1.Visibility = Visibility.Visible;
             OnDeleteStared(this, new EventArgs());
+        }
+
+        private async void btnHelp_Click(object sender, RoutedEventArgs e)
+        {
+            const string subject = "Feedback for Duplicate Remover Pro";
+            await Windows.System.Launcher.LaunchUriAsync(new Uri($"mailto:dpjha84.com?subject={subject}"));
         }
     }
 }

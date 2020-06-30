@@ -7,7 +7,7 @@ namespace DuplicateCleaner
     {
         static readonly string[] SizeSuffixes = { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 
-        public static string Suffix(Int64 value)
+        public static string Suffix(long value)
         {
             if (value < 0) { return "-" + Suffix(-value); }
             if (value == 0) { return "0.0 bytes"; }
@@ -44,11 +44,11 @@ namespace DuplicateCleaner
             switch (unit)
             {
                 case "KB":
-                    return val * 1024;
+                    return val * 1024L;
                 case "MB":
-                    return val * 1024 * 1024;
+                    return val * 1024 * 1024L;
                 case "GB":
-                    return val * 1024 * 1024 * 1024;
+                    return val * 1024 * 1024 * 1024L;
             }
             return 0;
         }

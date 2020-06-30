@@ -10,22 +10,57 @@ namespace DuplicateCleaner.UserControls
     public partial class PreferenceControl : UserControl
     {
         readonly SearchInfo searchInfo = SearchInfo.Instance;
+        readonly bool loaded = false;
 
         public PreferenceControl()
         {
             InitializeComponent();
+
+            chkImages.ToolTip = string.Join(", ", FileHelper.Pics);
+            chkMusic.ToolTip = string.Join(", ", FileHelper.Audio);
+            chkVideo.ToolTip = string.Join(", ", FileHelper.Video);
+            chkDocs.ToolTip = string.Join(", ", FileHelper.Docs);
             LoadSetting();
 
             txtMaxSize.PreviewTextInput += NumberValidationTextBox;
             txtMinSize.PreviewTextInput += NumberValidationTextBox;
-            txtMinSize.TextChanged += txtMinSize_TextChanged;
-            txtMaxSize.TextChanged += txtMaxSize_TextChanged;
+            txtMinSize.LostFocus += TxtMinSize_LostFocus;
+            txtMaxSize.LostFocus += TxtMaxSize_LostFocus;
 
             imgAddFolder.Source = new BitmapImage(new Uri("..\\..\\images\\AddFolder2.png", UriKind.Relative));
+            loaded = true;
+        }
+
+        string FormatText(TextBox text)
+        {
+            var trimmedText = text.Text.Trim();
+            if (trimmedText == "")
+                text.Text = "0";
+            else if (int.TryParse(trimmedText, out int num) && num < 1024)
+                text.Text = num.ToString();
+            else
+                text.Text = "1023";
+            return text.Text;
+        }
+
+        private void TxtMinSize_LostFocus(object sender, RoutedEventArgs e)
+        {
+            searchInfo.MinSize = SizeHelper.GetSizeInBytes(FormatText(sender as TextBox), ((ContentControl)cmbMinSize.SelectedValue).Content as string);
+        }
+
+        private void TxtMaxSize_LostFocus(object sender, RoutedEventArgs e)
+        {
+            searchInfo.MaxSize = SizeHelper.GetSizeInBytes(FormatText(sender as TextBox), ((ContentControl)cmbMaxSize.SelectedValue).Content as string);
         }
 
         void LoadSetting()
         {
+            cmbDupCriteria.SelectedIndex = (int)searchInfo.DupCriteria;
+            cmbDeleteOption.SelectedIndex = (int)searchInfo.DeleteOption;
+            chkCacheScannedData.IsChecked = searchInfo.CacheHashData;
+            btnClearNow.Style = searchInfo.CacheHashData 
+                ? FindResource("deleteButton") as Style : FindResource("disabledButton") as Style;
+
             lvLocations.ItemsSource = searchInfo.ScanLocations;
             lvLocations.Items.Refresh();
 
@@ -35,12 +70,7 @@ namespace DuplicateCleaner.UserControls
             chkDocs.IsChecked = searchInfo.IncludeDocuments;
 
             chkHiddenFolder.IsChecked = searchInfo.IncludeHiddenFolders;
-            if (searchInfo.DeleteOption == Microsoft.VisualBasic.FileIO.RecycleOption.DeletePermanently)
-                rdDeletePermanent.IsChecked = true;
-            else
-                rdMoveToRecycleBin.IsChecked = true;
-
-            if (searchInfo.MinSize != 0)
+            if (searchInfo.MinSize != -1)
             {
                 chkMinSize.IsChecked = true;
                 txtMinSize.IsEnabled = true;
@@ -54,11 +84,11 @@ namespace DuplicateCleaner.UserControls
                 chkMinSize.IsChecked = false;
                 txtMinSize.IsEnabled = false;
                 cmbMinSize.IsEnabled = false;
-                cmbMinSize.SelectedIndex = 0;
+                cmbMinSize.SelectedIndex = 1;
                 txtMinSize.Text = "1";
-                searchInfo.MinSize = 0;
+                searchInfo.MinSize = -1;
             }
-            if (searchInfo.MaxSize != 0)
+            if (searchInfo.MaxSize != -1)
             {
                 chkMaxSize.IsChecked = true;
                 txtMaxSize.IsEnabled = true;
@@ -72,9 +102,9 @@ namespace DuplicateCleaner.UserControls
                 chkMaxSize.IsChecked = false;
                 txtMaxSize.IsEnabled = false;
                 cmbMaxSize.IsEnabled = false;
-                cmbMaxSize.SelectedIndex = 0;
+                cmbMaxSize.SelectedIndex = 1;
                 txtMaxSize.Text = "100";
-                searchInfo.MaxSize = 0;
+                searchInfo.MaxSize = -1;
             }
 
             if (searchInfo.ModifiedAfter != null)
@@ -135,26 +165,10 @@ namespace DuplicateCleaner.UserControls
             }
         }
 
-        private void NumberValidationTextBox(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^0-9]+");
+            Regex regex = new Regex("[^0-9]");
             e.Handled = regex.IsMatch(e.Text);
-        }
-
-        private void txtMaxSize_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            var txt = sender as TextBox;
-            if (txt.Text.Length == 0)
-                txt.Text = "100";
-            searchInfo.MaxSize = SizeHelper.GetSizeInBytes(txtMaxSize.Text, ((ContentControl)cmbMaxSize.SelectedValue).Content as string);
-        }
-
-        private void txtMinSize_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            var txt = sender as TextBox;
-            if (((TextBox)sender).Text.Length == 0)
-                ((TextBox)sender).Text = "1";
-            searchInfo.MinSize = SizeHelper.GetSizeInBytes(txtMinSize.Text, ((ContentControl)cmbMinSize.SelectedValue).Content as string);
         }
 
         private void cmbMaxSize_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -189,14 +203,14 @@ namespace DuplicateCleaner.UserControls
         {
             txtMinSize.IsEnabled = false;
             cmbMinSize.IsEnabled = false;
-            searchInfo.MinSize = 0;
+            searchInfo.MinSize = -1;
         }
 
         private void chkMaxSize_Unchecked(object sender, RoutedEventArgs e)
         {
             txtMaxSize.IsEnabled = false;
             cmbMaxSize.IsEnabled = false;
-            searchInfo.MaxSize = 0;
+            searchInfo.MaxSize = -1;
         }
 
         private void chkMinModifyDate_Checked(object sender, RoutedEventArgs e)
@@ -307,12 +321,12 @@ namespace DuplicateCleaner.UserControls
 
         private void rdMoveToRecycleBin_Click(object sender, RoutedEventArgs e)
         {
-            searchInfo.DeleteOption = Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin;
+            searchInfo.DeleteOption = DeleteOption.SendToRecycleBin;
         }
 
         private void rdDeletePermanent_Click(object sender, RoutedEventArgs e)
         {
-            searchInfo.DeleteOption = Microsoft.VisualBasic.FileIO.RecycleOption.DeletePermanently;
+            searchInfo.DeleteOption = DeleteOption.PermanentDelete;
         }
 
         private void lvLocations_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
@@ -358,6 +372,39 @@ namespace DuplicateCleaner.UserControls
             var location = ((FrameworkElement)sender).DataContext as Location;
             location.Exclude = false;
             SetBorderColor(sender, System.Windows.Media.Brushes.Gray);
+        }
+
+        private async void btnClearNow_Click(object sender, RoutedEventArgs e)
+        {
+            tbCacheCleared.Visibility = Visibility.Visible;
+            await HashHelper.ResetCacheAsync();
+        }
+
+        private void cmbDeleteOption_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!loaded) return;
+            searchInfo.DeleteOption = (DeleteOption)cmbDeleteOption.SelectedIndex;
+        }
+
+        private void chkCacheScannedData_Checked(object sender, RoutedEventArgs e)
+        {
+            searchInfo.CacheHashData = true;
+            btnClearNow.Style = FindResource("deleteButton") as Style;
+        }
+
+        private async void chkCacheScannedData_Unchecked(object sender, RoutedEventArgs e)
+        {
+            var task = HashHelper.ResetCacheAsync();
+            searchInfo.CacheHashData = false;
+            btnClearNow.Style = FindResource("disabledButton") as Style;
+            tbCacheCleared.Visibility = Visibility.Collapsed;
+            await task;
+        }
+
+        private void cmbDupCriteria_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!loaded) return;
+            searchInfo.DupCriteria = (DuplicationMarkingCriteria)cmbDeleteOption.SelectedIndex;
         }
     }
 }

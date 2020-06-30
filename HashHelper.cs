@@ -10,39 +10,36 @@ namespace DuplicateCleaner
 {
     public class HashHelper
     {
+        const string cacheFile = "hashcache.json";
         static Dictionary<string, Tuple<DateTime, string>> cache;
 
         static HashHelper()
         {
-            var cacheData = ReadCache().Result;
+            var cacheData = ReadCache();
             if (!string.IsNullOrWhiteSpace(cacheData))
                 cache = JsonConvert.DeserializeObject<Dictionary<string, Tuple<DateTime, string>>>(cacheData);
             else
                 cache = new Dictionary<string, Tuple<DateTime, string>>();
         }
 
+        public static async Task ResetCacheAsync()
+        {
+            var deleteTask = FileHelper.Delete(cacheFile, Windows.Storage.StorageDeleteOption.Default);
+            cache = new Dictionary<string, Tuple<DateTime, string>>();
+            await deleteTask;
+        }
+
         public static async Task CacheHash()
         {
-            Windows.Storage.StorageFolder storageFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
-            Windows.Storage.StorageFile sampleFile = await storageFolder.CreateFileAsync("hashcache.json",
-                    Windows.Storage.CreationCollisionOption.ReplaceExisting).AsTask().ConfigureAwait(false);
-
-            var data = JsonConvert.SerializeObject(cache);
-            await Windows.Storage.FileIO.WriteTextAsync(sampleFile, data).AsTask().ConfigureAwait(false);
+            await FileHelper.Write(cacheFile, JsonConvert.SerializeObject(cache));
         }
 
-        static async Task<string> ReadCache()
-        {
-            Windows.Storage.StorageFolder storageFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
-            Windows.Storage.StorageFile sampleFile = await storageFolder.CreateFileAsync("hashcache.json",
-                    Windows.Storage.CreationCollisionOption.OpenIfExists).AsTask().ConfigureAwait(false); ;
-
-            var data = await Windows.Storage.FileIO.ReadTextAsync(sampleFile);
-            return data;
-        }
+        static string ReadCache() => FileHelper.Read(cacheFile).Result;
 
         public static string GetFileHash(string fileName)
         {
+            if (SearchInfo.Instance.DupCriteria == DuplicationMarkingCriteria.FileName) return Path.GetFileName(fileName);
+
             var lastModifiedTime = new FileInfoWrapper(fileName).DateModified;
             if (cache.ContainsKey(fileName))
             {
@@ -92,29 +89,6 @@ namespace DuplicateCleaner
             catch (Exception)
             {
                 return null;
-            }
-        }
-
-        public static async Task<string> GetFileHashAsync(string filename)
-        {
-            using (var md5 = MD5.Create())
-            {
-                using (var stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true)) // true means use IO async operations
-                {
-                    byte[] buffer = new byte[4096];
-                    int bytesRead;
-                    do
-                    {
-                        bytesRead = await stream.ReadAsync(buffer, 0, 4096);
-                        if (bytesRead > 0)
-                        {
-                            md5.TransformBlock(buffer, 0, bytesRead, null, 0);
-                        }
-                    } while (bytesRead > 0);
-
-                    md5.TransformFinalBlock(buffer, 0, 0);
-                    return BitConverter.ToString(md5.Hash).Replace("-", "").ToUpperInvariant();
-                }
             }
         }
     }

@@ -16,7 +16,15 @@
                         <TextBox Padding="5" x:Name="txt" Width="200" HorizontalAlignment="Left" Tag="Search in File Name" TextChanged="txt_TextChanged" Style="{StaticResource MyWaterMarkStyle}" />
                         <CheckBox Margin="30,0,0,0" Content="Preview Image" x:Name="chkImagePreview" IsChecked="True" Style="{StaticResource chkSmallTransform}" Checked="chkImagePreview_Checked" Unchecked="chkImagePreview_Unchecked" />
                     </StackPanel>
-                    <DataGrid SelectionChanged="dg_SelectionChanged" x:Name="dg" Style="{StaticResource dg}" RowStyle="{StaticResource rowStyle}" ItemsSource="{Binding}">
+                    <DataGrid SelectionChanged="dg_SelectionChanged" MouseDoubleClick="dg_MouseDoubleClick" x:Name="dg" Style="{StaticResource dg}" RowStyle="{StaticResource rowStyle}" ItemsSource="{Binding}">
+                        <DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Open"
+                                          Click="MenuItem_Open_Click" />
+                                <MenuItem Header="Reveal in Explorer"
+                                          Click="MenuItem_Reveal_Click" />
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
                         <DataGrid.Columns>
                         <DataGridTextColumn IsReadOnly="True" Header="Group" Binding="{Binding Group}" ElementStyle="{StaticResource txtVCenter}" />
                         <DataGridTextColumn IsReadOnly="True" Header="Name" Binding="{Binding Name}" ElementStyle="{StaticResource txtVCenter}" />
@@ -45,7 +53,7 @@
                         <DataGridTemplateColumn>
                             <DataGridTemplateColumn.Header>
                                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                                <TextBlock Text="Auto Select" HorizontalAlignment="Center" />
+                                <TextBlock Text="Auto Select for Deletion" HorizontalAlignment="Center" />
                                         <ComboBox Margin="0,5,0,0" Width="130" x:Name="cmbAutoSelect" HorizontalAlignment="Center" SelectedIndex="0" SelectionChanged="cmbAutoSelect_SelectionChanged">
                                             <ComboBoxItem Content="Older files in group" />
                                             <ComboBoxItem Content="All" />

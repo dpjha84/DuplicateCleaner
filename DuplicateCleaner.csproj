@@ -77,15 +77,12 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="FileHelper.cs" />
     <Compile Include="FileInfoWrapper.cs" />
+    <Compile Include="FileSearchFilter.cs" />
     <Compile Include="HashHelper.cs" />
-    <Compile Include="Home.xaml.cs">
-      <DependentUpon>Home.xaml</DependentUpon>
-    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="SafeFileEnumerator.cs" />
-    <Compile Include="SearchFileInfo.cs" />
     <Compile Include="SizeHelper.cs" />
     <Compile Include="UserControls\CleanupSummary.xaml.cs">
       <DependentUpon>CleanupSummary.xaml</DependentUpon>
@@ -103,10 +100,6 @@
     <Compile Include="UserControls\WelcomeControl.xaml.cs">
       <DependentUpon>WelcomeControl.xaml</DependentUpon>
     </Compile>
-    <Page Include="Home.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
