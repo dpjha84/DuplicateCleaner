@@ -155,7 +155,7 @@ namespace DuplicateCleaner.UserControls
         private async void btnHelp_Click(object sender, RoutedEventArgs e)
         {
             const string subject = "Feedback for Duplicate Remover Pro";
-            await Windows.System.Launcher.LaunchUriAsync(new Uri($"mailto:dpjha84.com?subject={subject}"));
+            await Windows.System.Launcher.LaunchUriAsync(new Uri($"mailto:dpjha84@gmail.com?subject={subject}"));
         }
     }
 }

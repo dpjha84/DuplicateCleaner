@@ -381,7 +381,7 @@ namespace DuplicateCleaner.UserControls
             var autoSelect = (cmbAutoSelect.SelectedItem as ComboBoxItem).Content.ToString();
             switch (autoSelect)
             {
-                case "Older files in group":
+                case "Newer files in group":
                     AutoSelectNewestFiles();
                     break;
                 case "All":
