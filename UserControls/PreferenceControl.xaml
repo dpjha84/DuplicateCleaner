@@ -149,7 +149,7 @@
                     <TextBlock Text="File Types"
                                Style="{StaticResource PrefrenceHeader}"></TextBlock>
                     <StackPanel Orientation="Vertical"
-                                Margin="0,20,0,0">
+                                Margin="0,0,0,0">
                         <StackPanel Orientation="Horizontal">
                             <CheckBox x:Name="chkImages"
                                       Style="{StaticResource chkTransform}"
@@ -210,6 +210,7 @@
                                 </Border>
                             </CheckBox>
                         </StackPanel>
+                        <TextBox Padding="5" x:Name="txtCustomFileType" LostFocus="txtCustomFileType_LostFocus"  Width="400" HorizontalAlignment="Left" Tag="Add Comma separated File Types. Example: .txt, .doc, .pdf" TextChanged="txtCustomFileType_TextChanged" Style="{StaticResource MyWaterMarkStyle}" />
                     </StackPanel>
                 </StackPanel>
             </Border>

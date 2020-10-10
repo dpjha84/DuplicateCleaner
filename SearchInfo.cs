@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DuplicateCleaner
@@ -18,7 +19,7 @@ namespace DuplicateCleaner
                 var cacheData = FileHelper.Read(settingFile).Result;
                 Instance = string.IsNullOrWhiteSpace(cacheData) ? DefaultInstance : JsonConvert.DeserializeObject<SearchInfo>(cacheData);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Instance = DefaultInstance;
             }
@@ -69,6 +70,8 @@ namespace DuplicateCleaner
         public DuplicationMarkingCriteria DupCriteria { get; set; }
 
         public bool CacheHashData { get; set; } = true;
+
+        public IEnumerable<string> CustomFileTypes { get; set; } = Enumerable.Empty<string>();
     }
 
     public enum DuplicationMarkingCriteria { FileContent, FileName }

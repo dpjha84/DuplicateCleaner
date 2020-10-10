@@ -61,6 +61,7 @@ namespace DuplicateCleaner.UserControls
 
         private void TopPanel_OnScanStared(object sender, EventArgs e)
         {
+            
             attached = true;
             StartScan();
         }
@@ -155,6 +156,9 @@ namespace DuplicateCleaner.UserControls
             if (searchInfo.IncludeAudios) extensions.AddRange(FileHelper.Audio);
             if (searchInfo.IncludeVideos) extensions.AddRange(FileHelper.Video);
             if (searchInfo.IncludeDocuments) extensions.AddRange(FileHelper.Docs);
+            searchInfo.CustomFileTypes = searchInfo.CustomFileTypes ?? Enumerable.Empty<string>();
+            extensions.AddRange(searchInfo.CustomFileTypes);
+            extensions = extensions.Distinct().ToList();
 
             var files = Enumerable.Empty<string>();
             var result = Extensions.GetOptimizedFolders(searchInfo.ScanLocations);

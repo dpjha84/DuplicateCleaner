@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -405,6 +406,17 @@ namespace DuplicateCleaner.UserControls
         {
             if (!loaded) return;
             searchInfo.DupCriteria = (DuplicationMarkingCriteria)cmbDeleteOption.SelectedIndex;
+        }
+
+        private void txtCustomFileType_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void txtCustomFileType_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var types = txtCustomFileType.Text.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim());
+            searchInfo.CustomFileTypes = types ?? Enumerable.Empty<string>();
         }
     }
 }
