@@ -69,12 +69,15 @@ namespace DuplicateCleaner
 
         public DuplicationMarkingCriteria DupCriteria { get; set; }
 
+        //public AutoDeletionMarking AutoMarking { get; set; }
+
         public bool CacheHashData { get; set; } = true;
 
         public IEnumerable<string> CustomFileTypes { get; set; } = Enumerable.Empty<string>();
     }
 
     public enum DuplicationMarkingCriteria { FileContent, FileName }
+    //public enum AutoDeletionMarking { NewerFilesInGroup, None }
 
     public class Location
     {

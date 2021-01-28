@@ -55,13 +55,18 @@ namespace DuplicateCleaner.UserControls
             InitializeComponent();
             chkImagePreview.IsChecked = true;
             searchInfo = SearchInfo.Instance;
+            dg.AutoGeneratingColumn += Dg_AutoGeneratingColumn;
             dg.ItemsSource = dupList;
             Loaded += DuplicatesControl_Loaded;
         }
 
+        private void Dg_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            e.Column.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
+        }
+
         private void TopPanel_OnScanStared(object sender, EventArgs e)
         {
-            
             attached = true;
             StartScan();
         }
@@ -85,8 +90,10 @@ namespace DuplicateCleaner.UserControls
             SizeBytes = 0;
             deleteList.Clear();
             cmbFileType.SelectedIndex = 0;
-            cmbAutoSelect.SelectedIndex = 0;
+            //cmbAutoSelect.SelectedIndex = 0;
             ImageControl.Source = null;
+            expander.Visibility = Visibility.Collapsed;
+            EnableButtons(false, btnOpen, btnReveal, btnMarkByFolder, btnMarkByType, btnMarkByGroup, btnUnmarkByFolder, btnUnmarkByGroup, btnUnmarkByType);
         }
 
         internal void StartScan()
@@ -146,7 +153,9 @@ namespace DuplicateCleaner.UserControls
                 FlushResult(Main.terminated);
                 if (searchInfo.CacheHashData)
                     HashHelper.CacheHash().ConfigureAwait(false);
-            });
+                if(dupList.Count > 0)
+                    expander.Visibility = Visibility.Visible;
+            });            
         }
 
         private IEnumerable<string> GetFiles(CancellationToken token)
@@ -336,10 +345,24 @@ namespace DuplicateCleaner.UserControls
             {
                 HandleFileCheck(file, ((ToggleButton)sender).IsChecked == true);
             }
-        }        
+        }
+
+        private void EnableButtons(bool enable, params Button[] btns)
+        {
+            grpItemActions.Visibility = enable ? Visibility.Visible : Visibility.Collapsed;
+            //foreach (var btn in btns)
+            //{
+            //    btn.Style = enable ? FindResource("mainLocal") as Style : FindResource("disabledLocal") as Style;
+            //}
+        }
 
         private void dg_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            var rowsCount = dg.SelectedItems.Count;
+            if (rowsCount == 0 || rowsCount > 1) return;
+
+            EnableButtons(true, btnOpen, btnReveal, btnMarkByFolder, btnMarkByType, btnMarkByGroup, btnUnmarkByFolder, btnUnmarkByGroup, btnUnmarkByType);
+            dpMark.Visibility = Visibility.Visible;
             var fileInfo = dg.SelectedItem as FileInfoWrapper;
             if (fileInfo != null)
             {
@@ -359,10 +382,11 @@ namespace DuplicateCleaner.UserControls
                     }
                     catch (Exception)
                     {
+                        ResetGrid();
                     }
                 }
                 else
-                    ResetGrid();                
+                    ResetGrid();
             }
         }
 
@@ -380,9 +404,13 @@ namespace DuplicateCleaner.UserControls
 
         private void cmbAutoSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            //HandleSelectionChange((cmbAutoSelect.SelectedItem as ComboBoxItem).Content.ToString());            
+        }
+
+        private void HandleSelectionChange(string autoSelect)
+        {
             SizeBytes = 0;
             deleteList.Clear();
-            var autoSelect = (cmbAutoSelect.SelectedItem as ComboBoxItem).Content.ToString();
             switch (autoSelect)
             {
                 case "Newer files in group":
@@ -419,17 +447,146 @@ namespace DuplicateCleaner.UserControls
         private async void dg_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             var fileInfo = dg.SelectedItem as FileInfoWrapper;
+            if (fileInfo == null) return;
             await Windows.System.Launcher.LaunchUriAsync(new Uri(fileInfo.FullName));
         }
 
         private async void MenuItem_Open_Click(object sender, RoutedEventArgs e)
         {
+            ResetGrid();
             var fileInfo = dg.SelectedItem as FileInfoWrapper;
             await Windows.System.Launcher.LaunchUriAsync(new Uri(fileInfo.FullName));
         }
 
+        private void MenuItem_ExcludeByFolder_Click(object sender, RoutedEventArgs e)
+        {
+            ResetGrid();
+            var fileInfo = dg.SelectedItem as FileInfoWrapper;
+            foreach (var item in dupList)
+            {
+                if (item.Deleted && item.DirectoryName == fileInfo.DirectoryName)
+                {
+                    item.Deleted = false;
+                    HandleFileCheck(item, false);
+                }
+            }
+            dg.ItemsSource = dupList;
+            dg.Items.Refresh();
+        }
+
+        private void MenuItem_ExcludeByFileExtn_Click(object sender, RoutedEventArgs e)
+        {
+            ResetGrid();
+            var fileInfo = dg.SelectedItem as FileInfoWrapper;
+            foreach (var item in dupList)
+            {
+                if (item.Deleted && Path.GetExtension(item.FullName) == Path.GetExtension(fileInfo.FullName))
+                {
+                    item.Deleted = false;
+                    HandleFileCheck(item, false);
+                }
+            }
+            dg.ItemsSource = dupList;
+            dg.Items.Refresh();
+        }
+
+        private void MenuItem_MarkByFolder_Click(object sender, RoutedEventArgs e)
+        {
+            ResetGrid();
+            var fileInfo = dg.SelectedItem as FileInfoWrapper;
+            foreach (var item in dupList)
+            {
+                if (!item.Deleted && item.DirectoryName == fileInfo.DirectoryName)
+                {
+                    item.Deleted = true;
+                    HandleFileCheck(item, true);
+                }
+            }
+            dg.ItemsSource = dupList;
+            dg.Items.Refresh();
+        }
+
+        private void MenuItem_MarkByFileExtn_Click(object sender, RoutedEventArgs e)
+        {
+            ResetGrid();
+            var fileInfo = dg.SelectedItem as FileInfoWrapper;
+            foreach (var item in dupList)
+            {
+                if (!item.Deleted && Path.GetExtension(item.FullName) == Path.GetExtension(fileInfo.FullName))
+                {
+                    item.Deleted = true;
+                    HandleFileCheck(item, true);
+                }
+            }
+            dg.ItemsSource = dupList;
+            dg.Items.Refresh();
+        }
+
+        private void MenuItem_MarkByGroup_Click(object sender, RoutedEventArgs e)
+        {
+            ResetGrid();
+            var fileInfo = dg.SelectedItem as FileInfoWrapper;
+            for (int i = 1; i < dupList.Count; i++)
+            {
+                if (!dupList[i].Deleted && dupList[i].Group == fileInfo.Group && dupList[i].Group == dupList[i-1].Group)
+                {
+                    dupList[i].Deleted = true;
+                    dupList[i-1].Deleted = true;
+                    HandleFileCheck(dupList[i], true);
+                    HandleFileCheck(dupList[i-1], true);
+                }
+            }
+            dg.ItemsSource = dupList;
+            dg.Items.Refresh();
+        }
+
+        private void MenuItem_ExcludeByGroup_Click(object sender, RoutedEventArgs e)
+        {
+            ResetGrid();
+            var fileInfo = dg.SelectedItem as FileInfoWrapper;
+            for (int i = 1; i < dupList.Count; i++)
+            {
+                if (dupList[i].Deleted && dupList[i].Group == fileInfo.Group && dupList[i].Group == dupList[i - 1].Group)
+                {
+                    dupList[i].Deleted = false;
+                    dupList[i - 1].Deleted = false;
+                    HandleFileCheck(dupList[i], false);
+                    HandleFileCheck(dupList[i - 1], false);
+                }
+            }
+            dg.ItemsSource = dupList;
+            dg.Items.Refresh();
+        }
+
+        private void Expander_Collapsed(object sender, RoutedEventArgs e)
+        {
+            dpMark.Visibility = Visibility.Collapsed;
+        }
+
+        private void Expander_Expanded(object sender, RoutedEventArgs e)
+        {
+            if(dpMark != null)
+                dpMark.Visibility = Visibility.Visible;
+        }
+
+        private void btnMarkAll_Click(object sender, RoutedEventArgs e)
+        {
+            HandleSelectionChange("All");
+        }
+
+        private void btnUnmarkAll_Click(object sender, RoutedEventArgs e)
+        {
+            HandleSelectionChange("None");
+        }
+
+        private void btnNewerFiles_Click(object sender, RoutedEventArgs e)
+        {
+            HandleSelectionChange("Newer files in group");
+        }
+
         private async void MenuItem_Reveal_Click(object sender, RoutedEventArgs e)
         {
+            ResetGrid();
             var fileInfo = dg.SelectedItem as FileInfoWrapper;
             await Windows.System.Launcher.LaunchUriAsync(new Uri(fileInfo.DirectoryName));
         }

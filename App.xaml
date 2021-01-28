@@ -48,6 +48,26 @@
             <Setter Property="IsEnabled"
                     Value="False" />
         </Style>
+        <Style x:Key="mainLocal"
+               TargetType="{x:Type Button}"
+               BasedOn="{StaticResource mainButton}">
+            <Setter Property="Margin"
+                    Value="5" />
+            <Setter Property="Height"
+                    Value="40" />
+            <Setter Property="Width"
+                    Value="140" />
+        </Style>
+        <Style x:Key="disabledLocal"
+               TargetType="{x:Type Button}"
+               BasedOn="{StaticResource disabledButton}">
+            <Setter Property="Margin"
+                    Value="5" />
+            <Setter Property="Height"
+                    Value="40" />
+            <Setter Property="Width"
+                    Value="140" />
+        </Style>
         <Style x:Key="MyWaterMarkStyle" TargetType="{x:Type TextBox}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -77,20 +97,45 @@
             <MenuItem Header="Edit"
                       Click="MenuItem_Click" />
         </ContextMenu>
+        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
+                         Color="#11ab23" />
+        <!--<SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}"
+                         Color="Transparent" />-->
         <Style x:Key="rowStyle" TargetType="DataGridRow">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsAlternate}" Value="True">
-                    <Setter Property="Background" Value="LightBlue"></Setter>
+                    <Setter Property="Background"
+                            Value="#75B9BE"></Setter>
                 </DataTrigger>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="LightGreen" />
                 </Trigger>
+                <Trigger Property="IsSelected"
+                         Value="True">
+                    <Setter Property="BorderThickness"
+                            Value="3" />
+                    <Setter Property="BorderBrush"
+                            Value="DarkGreen" />
+                </Trigger>
+                <!--<Trigger Property="IsSelected"
+                         Value="False">
+                    <Setter Property="BorderThickness"
+                            Value="5" />
+                    <Setter Property="BorderBrush"
+                            Value="Transparent" />
+                </Trigger>-->
             </Style.Triggers>
             <!--<Setter Property="ContextMenu" Value="{StaticResource RowMenu}" />-->
         </Style>
         <Style x:Key="txtVCenter" TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Padding" Value="5" />
+            <!--<Setter Property="Padding" Value="5" />-->
+            <Setter Property="Margin" Value="10" />
+            <Setter Property="LayoutTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1.25" ScaleY="1.25" />
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style x:Key="chkHCenter" TargetType="CheckBox">
             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -100,7 +145,7 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="LayoutTransform">
                 <Setter.Value>
-                    <ScaleTransform ScaleX="1.25" ScaleY="1.25" />
+                    <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
                 </Setter.Value>
             </Setter>
         </Style>
@@ -112,6 +157,13 @@
             <Setter Property="CanUserResizeRows" Value="False" />
             <Setter Property="BorderThickness" Value="2" />
             <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="SelectionMode" Value="Single" />
+        </Style>
+        <Style x:Key="dgCell" TargetType="DataGridCell">
+            <Setter Property="BorderThickness"
+                    Value="0" />
+            <Setter Property="FocusVisualStyle"
+                    Value="{x:Null}" />
         </Style>
         <Style TargetType="TextBlock" x:Key="bigText">
             <Setter Property="LayoutTransform">
@@ -162,6 +214,25 @@
             <Setter Property="FontWeight" Value="Thin" />
             <Setter Property="FontSize" Value="28" />
         </Style>
+        <Style x:Key="markHeader" TargetType="{x:Type ListViewItem}">
+            <Setter Property="Background"
+                    Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListViewItem}">
+                        <Border BorderBrush="Transparent"
+                                BorderThickness="0"
+                                Background="{TemplateBinding Background}">
+                            <GridViewRowPresenter HorizontalAlignment="Stretch"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  Width="Auto"
+                                                  Margin="0"
+                                                  Content="{TemplateBinding Content}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <Style x:Key="ListViewItemStyle1" TargetType="{x:Type ListViewItem}">
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
@@ -196,6 +267,10 @@
                                     <Condition Property="IsMouseOver" Value="True" />
                                 </MultiTrigger.Conditions>
                                 <Setter Property="Background" TargetName="Bd" Value="LightGreen" />
+                                <Setter Property="BorderBrush" TargetName="Bd"
+                                        Value="Green" />
+                                <Setter Property="BorderThickness" TargetName="Bd"
+                                        Value="1" />
                             </MultiTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

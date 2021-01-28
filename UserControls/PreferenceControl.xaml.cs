@@ -418,5 +418,11 @@ namespace DuplicateCleaner.UserControls
             var types = txtCustomFileType.Text.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim());
             searchInfo.CustomFileTypes = types ?? Enumerable.Empty<string>();
         }
+
+        //private void cmbDefaultMarking_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    if (!loaded) return;
+        //    searchInfo.AutoMarking = cmbDefaultMarking.SelectedIndex == 0 ? AutoDeletionMarking.NewerFilesInGroup : AutoDeletionMarking.None;
+        //}
     }
 }
