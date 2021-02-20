@@ -144,15 +144,13 @@ namespace DuplicateCleaner.UserControls
 
         private void btnAddLocation_Click(object sender, RoutedEventArgs e)
         {
-            using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+            var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
+            var result = dialog.ShowDialog();
+            if (result.HasValue)
             {
-                System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-                if (result == System.Windows.Forms.DialogResult.OK)
-                {
-                    searchInfo.ScanLocations.Add(new Location { Name = dialog.SelectedPath });
-                    lvLocations.ItemsSource = searchInfo.ScanLocations;
-                    lvLocations.Items.Refresh();
-                }
+                searchInfo.ScanLocations.Add(new Location { Name = dialog.SelectedPath });
+                lvLocations.ItemsSource = searchInfo.ScanLocations;
+                lvLocations.Items.Refresh();
             }
         }
 
