@@ -37,6 +37,20 @@
                         <ListView PreviewMouseWheel="lvLocations_PreviewMouseWheel" Name="lvLocations" Background="Transparent" Grid.ColumnSpan="2" BorderThickness="0" Grid.Row="2" ItemsSource="{Binding}" ItemContainerStyle="{StaticResource ListViewItemStyle1}">
                             <ListView.View>
                                 <GridView ColumnHeaderContainerStyle="{StaticResource myHeaderStyle}">
+                                    <GridViewColumn Width="40">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button BorderThickness="0"
+                                                        Width="35"
+                                                        Height="35"
+                                                        Background="Transparent"
+                                                        Name="btnIcon">
+                                                    <Image Name="img2"
+                                                           Source="{Binding Icon}" />
+                                                </Button>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
                                     <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}" />
                                     <GridViewColumn Width="180">
                                         <GridViewColumn.CellTemplate>
@@ -140,7 +154,7 @@
                                    Text="Cache cleared"
                                    Visibility="Collapsed"
                                    Style="{StaticResource bigText}"
-                                   Foreground="Green" />
+                                   Foreground="#1985c1" />
                     </StackPanel>
                 </StackPanel>
             </Border>

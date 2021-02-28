@@ -4,7 +4,8 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <Style x:Key="mainButton" TargetType="Button">
-            <Setter Property="Background" Value="Green" />
+            <Setter Property="Background"
+                    Value="#1985c1" />
             <Setter Property="FontWeight" Value="DemiBold" />
             <Setter Property="Foreground" Value="White" />
             <Setter Property="Template">
@@ -18,7 +19,7 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="LimeGreen" />
+                    <Setter Property="Background" Value="#00a2ed" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -98,24 +99,24 @@
                       Click="MenuItem_Click" />
         </ContextMenu>
         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
-                         Color="#11ab23" />
+                         Color="#00a2ed" />
         <!--<SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}"
                          Color="Transparent" />-->
         <Style x:Key="rowStyle" TargetType="DataGridRow">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsAlternate}" Value="True">
                     <Setter Property="Background"
-                            Value="#75B9BE"></Setter>
+                            Value="LightGray"></Setter>
                 </DataTrigger>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="LightGreen" />
+                    <Setter Property="Background" Value="#85c0f4" />
                 </Trigger>
                 <Trigger Property="IsSelected"
                          Value="True">
                     <Setter Property="BorderThickness"
-                            Value="3" />
+                            Value="1" />
                     <Setter Property="BorderBrush"
-                            Value="DarkGreen" />
+                            Value="#1f6997" />
                 </Trigger>
                 <!--<Trigger Property="IsSelected"
                          Value="False">
@@ -236,7 +237,8 @@
         <Style x:Key="ListViewItemStyle1" TargetType="{x:Type ListViewItem}">
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="BorderBrush" Value="Green" />
+                    <Setter Property="BorderBrush"
+                            Value="#85c0f4" />
                     <Setter Property="BorderThickness" Value="1" />
                 </Trigger>
                 <Trigger Property="IsMouseOver" Value="False">
@@ -255,7 +257,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListViewItem}">
-                        <Border x:Name="Bd" Padding="15"
+                        <Border x:Name="Bd" Padding="10"
                          BorderBrush="Transparent"
                          BorderThickness="1"
                          Background="{TemplateBinding Background}">
@@ -266,9 +268,11 @@
                                 <MultiTrigger.Conditions>
                                     <Condition Property="IsMouseOver" Value="True" />
                                 </MultiTrigger.Conditions>
-                                <Setter Property="Background" TargetName="Bd" Value="LightGreen" />
+                                <Setter Property="Background"
+                                        TargetName="Bd"
+                                        Value="#85c0f4" />
                                 <Setter Property="BorderBrush" TargetName="Bd"
-                                        Value="Green" />
+                                        Value="#1f6997" />
                                 <Setter Property="BorderThickness" TargetName="Bd"
                                         Value="1" />
                             </MultiTrigger>

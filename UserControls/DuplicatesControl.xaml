@@ -139,9 +139,18 @@
                                                       IsChecked="{Binding Deleted, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
+                                </DataGridTemplateColumn>                                
                                 <DataGridTextColumn IsReadOnly="True" Header="Group" Binding="{Binding Group}" ElementStyle="{StaticResource txtVCenter}" />
-                        <DataGridTextColumn IsReadOnly="True" Header="Name" Binding="{Binding Name}" ElementStyle="{StaticResource txtVCenter}" />
+                                <DataGridTemplateColumn Width="SizeToCells"
+                                                        IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Image Source="{Binding Icon}"
+                                                   Stretch="None" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn IsReadOnly="True" Header="Name" Binding="{Binding Name}" ElementStyle="{StaticResource txtVCenter}" />
                             <DataGridTemplateColumn IsReadOnly="True" Width="120">
                                 <DataGridTemplateColumn.Header>
                                     <StackPanel Orientation="Vertical" VerticalAlignment="Center">

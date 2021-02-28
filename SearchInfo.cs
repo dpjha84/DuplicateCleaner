@@ -90,6 +90,20 @@ namespace DuplicateCleaner
         public bool ExcludedInTree { get; set; }
 
         public string RemoveIcon { get; set; } = "..\\..\\images\\Remove.png";
+
+        string icon;
+        public string Icon
+        {
+            get
+            {
+                icon = new DirectoryInfo(Name).Root.FullName == Name ? "..\\..\\images\\drive.png" : "..\\..\\images\\folder2.png";
+                return icon;
+            }
+            set
+            {
+                icon = value;
+            }
+        }
     }
 
     public enum DeleteOption { SendToRecycleBin, PermanentDelete };
