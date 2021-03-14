@@ -56,9 +56,23 @@ namespace DuplicateCleaner.UserControls
             chkImagePreview.IsChecked = true;
             searchInfo = SearchInfo.Instance;
             dg.AutoGeneratingColumn += Dg_AutoGeneratingColumn;
-            dg.ItemsSource = dupList;
+            SetSource(dupList);
             Loaded += DuplicatesControl_Loaded;
         }
+
+        private void SetSource(List<FileInfoWrapper> list)
+        {
+            //ListCollectionView collection = new ListCollectionView(list);
+            //collection.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+            dg.ItemsSource = list;// collection;
+        }
+
+        //private void SetSource1(ListCollectionView list)
+        //{
+        //    ListCollectionView collection = new ListCollectionView(list);
+        //    collection.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+        //    dg.ItemsSource = collection;
+        //}
 
         private void Dg_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
@@ -101,7 +115,11 @@ namespace DuplicateCleaner.UserControls
             Reset();
             OnScanInitiated(this, new EventArgs());
             dupDataDict.Clear();
-            dg.ItemsSource = dupDataDict.Values;
+            dupList.Clear();
+            dg.ItemsSource = dupList;
+            //SetSource(dupList);
+            //dg.ItemsSource = dupDataDict.Values;
+            //SetSource(dupDataDict.Values.AsEnumerable<List<FileInfoWrapper>>());
             cts = new CancellationTokenSource();
             Task.Run(() => StartProcess(cts.Token));
         }
@@ -193,7 +211,11 @@ namespace DuplicateCleaner.UserControls
         private void FlushResult(bool terminated)
         {
             dupList = AttachGroupAndFlattenList(dupDataDict.Values.OrderByDescending(x => x.Sum(z => z.Length)), true);
-            dg.ItemsSource = dupList;
+            ListCollectionView collection = new ListCollectionView(dupList);
+            collection.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+            dg.ItemsSource = collection;
+            //dg.ItemsSource = dupList;
+            //SetSource(dupList);
             fileCountLabel.Text = dupDataDict.Count + " duplicate(s)";
             timeTakenLabel.Text = $"Time: {timeTaken.ToHumanTimeString()}";
             currentFileLabel.Text = "";
@@ -335,6 +357,7 @@ namespace DuplicateCleaner.UserControls
             ICollectionView Itemlist = itemSourceList.View;
             Itemlist.Filter = predicate;
             dg.ItemsSource = Itemlist;
+            //SetSource(Itemlist);
         }
 
         #region Control Event Handlers
@@ -429,7 +452,8 @@ namespace DuplicateCleaner.UserControls
                 default:
                     break;
             }
-            dg.ItemsSource = dupList;
+            //dg.ItemsSource = dupList;
+            SetSource(dupList);
             dg.Items.Refresh();
         }
 
@@ -470,7 +494,8 @@ namespace DuplicateCleaner.UserControls
                     HandleFileCheck(item, false);
                 }
             }
-            dg.ItemsSource = dupList;
+            //dg.ItemsSource = dupList;
+            SetSource(dupList);
             dg.Items.Refresh();
         }
 
@@ -486,7 +511,8 @@ namespace DuplicateCleaner.UserControls
                     HandleFileCheck(item, false);
                 }
             }
-            dg.ItemsSource = dupList;
+            //dg.ItemsSource = dupList;
+            SetSource(dupList);
             dg.Items.Refresh();
         }
 
@@ -502,7 +528,8 @@ namespace DuplicateCleaner.UserControls
                     HandleFileCheck(item, true);
                 }
             }
-            dg.ItemsSource = dupList;
+            //dg.ItemsSource = dupList;
+            SetSource(dupList);
             dg.Items.Refresh();
         }
 
@@ -518,7 +545,8 @@ namespace DuplicateCleaner.UserControls
                     HandleFileCheck(item, true);
                 }
             }
-            dg.ItemsSource = dupList;
+            //dg.ItemsSource = dupList;
+            SetSource(dupList);
             dg.Items.Refresh();
         }
 
@@ -536,7 +564,8 @@ namespace DuplicateCleaner.UserControls
                     HandleFileCheck(dupList[i-1], true);
                 }
             }
-            dg.ItemsSource = dupList;
+            //dg.ItemsSource = dupList;
+            SetSource(dupList);
             dg.Items.Refresh();
         }
 
@@ -554,7 +583,8 @@ namespace DuplicateCleaner.UserControls
                     HandleFileCheck(dupList[i - 1], false);
                 }
             }
-            dg.ItemsSource = dupList;
+            //dg.ItemsSource = dupList;
+            SetSource(dupList);
             dg.Items.Refresh();
         }
 

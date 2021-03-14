@@ -96,7 +96,16 @@
                         <CheckBox Margin="30,0,0,0" Content="Preview Image" x:Name="chkImagePreview" IsChecked="True" Style="{StaticResource chkSmallTransform}" Checked="chkImagePreview_Checked" Unchecked="chkImagePreview_Unchecked" />
                     </StackPanel>
                         <DataGrid SelectionChanged="dg_SelectionChanged" CellStyle="{StaticResource dgCell}" MouseDoubleClick="dg_MouseDoubleClick" x:Name="dg" Style="{StaticResource dg}" RowStyle="{StaticResource rowStyle}" ItemsSource="{Binding}">
-                        <DataGrid.ContextMenu>
+                            <DataGrid.GroupStyle>
+                                <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
+                                    <GroupStyle.Panel>
+                                        <ItemsPanelTemplate>
+                                            <DataGridRowsPresenter />
+                                        </ItemsPanelTemplate>
+                                    </GroupStyle.Panel>
+                                </GroupStyle>
+                            </DataGrid.GroupStyle>
+                            <DataGrid.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Open"
                                           Click="MenuItem_Open_Click" />

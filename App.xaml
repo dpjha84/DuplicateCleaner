@@ -103,10 +103,14 @@
         <!--<SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}"
                          Color="Transparent" />-->
         <Style x:Key="rowStyle" TargetType="DataGridRow">
+            <!--<Setter Property="BorderBrush"
+                    Value="LightGray" />
+            <Setter Property="BorderThickness"
+                    Value="1" />-->
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsAlternate}" Value="True">
                     <Setter Property="Background"
-                            Value="LightGray"></Setter>
+                            Value="#ededed"></Setter>
                 </DataTrigger>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="#85c0f4" />
@@ -158,11 +162,15 @@
             <Setter Property="CanUserResizeRows" Value="False" />
             <Setter Property="BorderThickness" Value="2" />
             <Setter Property="BorderBrush" Value="Gray" />
-            <Setter Property="SelectionMode" Value="Single" />
+            <Setter Property="SelectionMode"
+                    Value="Single" />
+            <Setter Property="GridLinesVisibility" Value="None"/>
         </Style>
         <Style x:Key="dgCell" TargetType="DataGridCell">
             <Setter Property="BorderThickness"
-                    Value="0" />
+                    Value="0.5" />
+            <Setter Property="BorderBrush"
+                    Value="LightGray" />
             <Setter Property="FocusVisualStyle"
                     Value="{x:Null}" />
         </Style>
@@ -281,5 +289,58 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style TargetType="Border"
+               x:Key="RacePitBorderStyle">
+            <Style.Resources>
+                <LinearGradientBrush x:Key="BackBrush"
+                                     StartPoint="0.5,0"
+                                     EndPoint="0.5,1">
+                    <GradientStop Color="#EF3132"
+                                  Offset="0.1" />
+                    <GradientStop Color="#D62B2B"
+                                  Offset="0.9" />
+                </LinearGradientBrush>
+            </Style.Resources>
+            <Setter Property="Background"
+                    Value="{StaticResource BackBrush}" />
+        </Style>
+        <DataTemplate x:Key="titleText">
+            <Border Background="Red" />
+        </DataTemplate>
+        <Style x:Key="expander"
+               TargetType="{x:Type Expander}">
+            <Setter Property="HeaderTemplate"
+                    Value="{StaticResource titleText}" />
+        </Style>
+        <Style x:Key="GroupHeaderStyle"
+               TargetType="{x:Type GroupItem}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type GroupItem}">
+                        <Expander x:Name="exp"
+                                  IsExpanded="True">
+                            <Expander.Header>
+                                
+                                <StackPanel Orientation="Horizontal" Margin="10">
+                                    <TextBlock Text="Group: "
+                                               Margin="5,2,0,2"
+                                               Style="{StaticResource bigText}" />
+                                <TextBlock Text="{Binding Name}" Margin="0,2,40,2" Style="{StaticResource bigText}" />
+                                    <TextBlock Text="{Binding ItemCount}"
+                                               Margin="0,2,2,2"
+                                               Style="{StaticResource bigText}" />
+                                    <TextBlock Text="duplicates"
+                                               Margin="0,2,0,2"
+                                               Style="{StaticResource bigText}" />
+                                </StackPanel>
+                                
+                            </Expander.Header>
+                            <ItemsPresenter />
+                        </Expander>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
     </Application.Resources>
 </Application>
