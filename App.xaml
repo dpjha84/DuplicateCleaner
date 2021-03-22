@@ -3,344 +3,359 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <Style x:Key="mainButton" TargetType="Button">
-            <Setter Property="Background"
+        <ResourceDictionary>
+
+            <ResourceDictionary.MergedDictionaries>
+                <!--<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Dark.xaml" />-->
+
+                <!--<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.BlueGrey.xaml" />-->
+                <!--<ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />-->
+                <!--My resource-->
+
+            </ResourceDictionary.MergedDictionaries>
+
+
+            <Style x:Key="mainButton" TargetType="Button">
+                <Setter Property="Background"
                     Value="#1985c1" />
-            <Setter Property="FontWeight" Value="DemiBold" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border Background="{TemplateBinding Background}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#00a2ed" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        <Style x:Key="deleteButton" TargetType="Button">
-            <Setter Property="Background" Value="DarkRed" />
-            <Setter Property="FontWeight" Value="DemiBold" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="IsEnabled" Value="True" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border Background="{TemplateBinding Background}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="IndianRed" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        <Style x:Key="disabledButton" TargetType="Button">
-            <Setter Property="Background"
+                <Setter Property="FontWeight" Value="DemiBold" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border Background="{TemplateBinding Background}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#00a2ed" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="deleteButton" TargetType="Button">
+                <Setter Property="Background" Value="DarkRed" />
+                <Setter Property="FontWeight" Value="DemiBold" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="IsEnabled" Value="True" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border Background="{TemplateBinding Background}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="IndianRed" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="disabledButton" TargetType="Button">
+                <Setter Property="Background"
                     Value="Gray" />
-            <Setter Property="IsEnabled"
+                <Setter Property="IsEnabled"
                     Value="False" />
-        </Style>
-        <Style x:Key="mainLocal"
+            </Style>
+            <Style x:Key="mainLocal"
                TargetType="{x:Type Button}"
                BasedOn="{StaticResource mainButton}">
-            <Setter Property="Margin"
+                <Setter Property="Margin"
                     Value="5" />
-            <Setter Property="Height"
+                <Setter Property="Height"
                     Value="40" />
-            <Setter Property="Width"
+                <Setter Property="Width"
                     Value="140" />
-        </Style>
-        <Style x:Key="disabledLocal"
+            </Style>
+            <Style x:Key="disabledLocal"
                TargetType="{x:Type Button}"
                BasedOn="{StaticResource disabledButton}">
-            <Setter Property="Margin"
+                <Setter Property="Margin"
                     Value="5" />
-            <Setter Property="Height"
+                <Setter Property="Height"
                     Value="40" />
-            <Setter Property="Width"
+                <Setter Property="Width"
                     Value="140" />
-        </Style>
-        <Style x:Key="MyWaterMarkStyle" TargetType="{x:Type TextBox}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type TextBox}">
-                        <Grid>
-                            <Border Background="White" BorderBrush="#FF7D8683" BorderThickness="1" />
-                            <ScrollViewer x:Name="PART_ContentHost" Margin="5,0,0,0" VerticalAlignment="Center" />
-                            <Label FontStyle="Italic" Margin="7,0,0,0" x:Name="WaterMarkLabel" Content="{TemplateBinding Tag}" VerticalAlignment="Center" Visibility="Collapsed" Foreground="Gray" />
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="Text" Value="" />
-                                </MultiTrigger.Conditions>
-                                <Setter Property="Visibility" TargetName="WaterMarkLabel" Value="Visible" />
-                            </MultiTrigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Foreground" Value="DimGray" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <ContextMenu  x:Key="RowMenu"
+            </Style>
+            <Style x:Key="MyWaterMarkStyle" TargetType="{x:Type TextBox}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type TextBox}">
+                            <Grid>
+                                <Border Background="White" BorderBrush="#FF7D8683" BorderThickness="1" />
+                                <ScrollViewer x:Name="PART_ContentHost" Margin="5,0,0,0" VerticalAlignment="Center" />
+                                <Label FontStyle="Italic" Margin="7,0,0,0" x:Name="WaterMarkLabel" Content="{TemplateBinding Tag}" VerticalAlignment="Center" Visibility="Collapsed" Foreground="Gray" />
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="Text" Value="" />
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Visibility" TargetName="WaterMarkLabel" Value="Visible" />
+                                </MultiTrigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Foreground" Value="DimGray" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <!--<ContextMenu  x:Key="RowMenu"
                       DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
-            <MenuItem Header="Edit"
+                <MenuItem Header="Edit"
                       Click="MenuItem_Click" />
-        </ContextMenu>
-        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
+            </ContextMenu>-->
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
                          Color="#00a2ed" />
-        <!--<SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}"
+            <!--<SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}"
                          Color="Transparent" />-->
-        <Style x:Key="rowStyle" TargetType="DataGridRow">
-            <!--<Setter Property="BorderBrush"
+            <Style x:Key="rowStyle" TargetType="DataGridRow">
+                <!--<Setter Property="BorderBrush"
                     Value="LightGray" />
             <Setter Property="BorderThickness"
                     Value="1" />-->
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsAlternate}" Value="True">
-                    <Setter Property="Background"
+                <Style.Triggers>
+                    <!--<DataTrigger Binding="{Binding IsAlternate}" Value="True">
+                        <Setter Property="Background"
                             Value="#ededed"></Setter>
-                </DataTrigger>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#85c0f4" />
-                </Trigger>
-                <Trigger Property="IsSelected"
+                    </DataTrigger>-->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#85c0f4" />
+                    </Trigger>
+                    <Trigger Property="IsSelected"
                          Value="True">
-                    <Setter Property="BorderThickness"
+                        <Setter Property="BorderThickness"
                             Value="1" />
-                    <Setter Property="BorderBrush"
+                        <Setter Property="BorderBrush"
                             Value="#1f6997" />
-                </Trigger>
-                <!--<Trigger Property="IsSelected"
+                    </Trigger>
+                    <!--<Trigger Property="IsSelected"
                          Value="False">
                     <Setter Property="BorderThickness"
                             Value="5" />
                     <Setter Property="BorderBrush"
                             Value="Transparent" />
                 </Trigger>-->
-            </Style.Triggers>
-            <!--<Setter Property="ContextMenu" Value="{StaticResource RowMenu}" />-->
-        </Style>
-        <Style x:Key="txtVCenter" TargetType="TextBlock">
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <!--<Setter Property="Padding" Value="5" />-->
-            <Setter Property="Margin" Value="10" />
-            <Setter Property="LayoutTransform">
-                <Setter.Value>
-                    <ScaleTransform ScaleX="1.25" ScaleY="1.25" />
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style x:Key="chkHCenter" TargetType="CheckBox">
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
-        </Style>
-        <Style x:Key="chkVCenter" TargetType="CheckBox" BasedOn="{StaticResource chkHCenter}">
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="LayoutTransform">
-                <Setter.Value>
-                    <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style x:Key="dg" TargetType="DataGrid">
-            <Setter Property="HorizontalGridLinesBrush" Value="Gray" />
-            <Setter Property="VerticalGridLinesBrush" Value="Gray" />
-            <Setter Property="AutoGenerateColumns" Value="False" />
-            <Setter Property="RowHeaderWidth" Value="0" />
-            <Setter Property="CanUserResizeRows" Value="False" />
-            <Setter Property="BorderThickness" Value="2" />
-            <Setter Property="BorderBrush" Value="Gray" />
-            <Setter Property="SelectionMode"
+                </Style.Triggers>
+                <!--<Setter Property="ContextMenu" Value="{StaticResource RowMenu}" />-->
+            </Style>
+            <Style x:Key="txtVCenter" TargetType="TextBlock">
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <!--<Setter Property="Padding" Value="5" />-->
+                <Setter Property="Margin" Value="10" />
+                <Setter Property="LayoutTransform">
+                    <Setter.Value>
+                        <ScaleTransform ScaleX="1.25" ScaleY="1.25" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="chkHCenter" TargetType="CheckBox">
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="chkVCenter" TargetType="CheckBox" BasedOn="{StaticResource chkHCenter}">
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="LayoutTransform">
+                    <Setter.Value>
+                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="dg" TargetType="DataGrid">
+                <Setter Property="HorizontalGridLinesBrush" Value="Gray" />
+                <Setter Property="VerticalGridLinesBrush" Value="Gray" />
+                <Setter Property="AutoGenerateColumns" Value="False" />
+                <Setter Property="RowHeaderWidth" Value="0" />
+                <Setter Property="CanUserResizeRows" Value="False" />
+                <Setter Property="BorderThickness" Value="2" />
+                <Setter Property="BorderBrush" Value="Gray" />
+                <Setter Property="SelectionMode"
                     Value="Single" />
-            <Setter Property="GridLinesVisibility" Value="None"/>
-        </Style>
-        <Style x:Key="dgCell" TargetType="DataGridCell">
-            <Setter Property="BorderThickness"
+                <Setter Property="GridLinesVisibility" Value="None"/>
+            </Style>
+            <Style x:Key="dgCell" TargetType="DataGridCell">
+                <Setter Property="BorderThickness"
                     Value="0.5" />
-            <Setter Property="BorderBrush"
+                <Setter Property="BorderBrush"
                     Value="LightGray" />
-            <Setter Property="FocusVisualStyle"
+                <Setter Property="FocusVisualStyle"
                     Value="{x:Null}" />
-        </Style>
-        <Style TargetType="TextBlock" x:Key="bigText">
-            <Setter Property="LayoutTransform">
-                <Setter.Value>
-                    <ScaleTransform ScaleX="1.25" ScaleY="1.25"  />
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style TargetType="CheckBox" x:Key="bigCheckbox">
-            <Setter Property="LayoutTransform">
-                <Setter.Value>
-                    <ScaleTransform ScaleX="1.25" ScaleY="1.25"  />
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style TargetType="RadioButton" x:Key="bigRadioButton">
-            <Setter Property="LayoutTransform">
-                <Setter.Value>
-                    <ScaleTransform ScaleX="1.25" ScaleY="1.25"  />
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style TargetType="CheckBox" x:Key="chkSmallTransform">
-            <Setter Property="LayoutTransform">
-                <Setter.Value>
-                    <ScaleTransform ScaleX="1.25" ScaleY="1.25" />
-                </Setter.Value>
-            </Setter>
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Margin" Value="20" />
-        </Style>
-        <Style TargetType="CheckBox" x:Key="chkTransform">
-            <Setter Property="LayoutTransform">
-                <Setter.Value>
-                    <ScaleTransform ScaleX="1.25" ScaleY="1.25"  />
-                </Setter.Value>
-            </Setter>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="20"/>
-        </Style>
-        <Style TargetType="DatePickerTextBox">
-            <Setter Property="IsReadOnly" Value="True"/>
-        </Style>
-        <Style x:Key="myHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
-            <Setter Property="Visibility" Value="Collapsed" />
-        </Style>
-        <Style x:Key="PrefrenceHeader" TargetType="TextBlock" >
-            <Setter Property="FontWeight" Value="Thin" />
-            <Setter Property="FontSize" Value="28" />
-        </Style>
-        <Style x:Key="markHeader" TargetType="{x:Type ListViewItem}">
-            <Setter Property="Background"
+            </Style>
+            <Style TargetType="TextBlock" x:Key="bigText">
+                <Setter Property="LayoutTransform">
+                    <Setter.Value>
+                        <ScaleTransform ScaleX="1.25" ScaleY="1.25"  />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style TargetType="CheckBox" x:Key="bigCheckbox">
+                <Setter Property="LayoutTransform">
+                    <Setter.Value>
+                        <ScaleTransform ScaleX="1.25" ScaleY="1.25"  />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style TargetType="RadioButton" x:Key="bigRadioButton">
+                <Setter Property="LayoutTransform">
+                    <Setter.Value>
+                        <ScaleTransform ScaleX="1.25" ScaleY="1.25"  />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style TargetType="CheckBox" x:Key="chkSmallTransform">
+                <Setter Property="LayoutTransform">
+                    <Setter.Value>
+                        <ScaleTransform ScaleX="1.25" ScaleY="1.25" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="Margin" Value="20" />
+            </Style>
+            <Style TargetType="CheckBox" x:Key="chkTransform">
+                <Setter Property="LayoutTransform">
+                    <Setter.Value>
+                        <ScaleTransform ScaleX="1.25" ScaleY="1.25"  />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="20"/>
+            </Style>
+            <Style TargetType="DatePickerTextBox">
+                <Setter Property="IsReadOnly" Value="True"/>
+            </Style>
+            <Style x:Key="myHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </Style>
+            <Style x:Key="PrefrenceHeader" TargetType="TextBlock" >
+                <Setter Property="FontWeight" Value="Thin" />
+                <Setter Property="FontSize" Value="28" />
+            </Style>
+            <Style x:Key="markHeader" TargetType="{x:Type ListViewItem}">
+                <Setter Property="Background"
                     Value="Transparent" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ListViewItem}">
-                        <Border BorderBrush="Transparent"
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListViewItem}">
+                            <Border BorderBrush="Transparent"
                                 BorderThickness="0"
                                 Background="{TemplateBinding Background}">
-                            <GridViewRowPresenter HorizontalAlignment="Stretch"
+                                <GridViewRowPresenter HorizontalAlignment="Stretch"
                                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                                   Width="Auto"
                                                   Margin="0"
                                                   Content="{TemplateBinding Content}" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style x:Key="ListViewItemStyle1" TargetType="{x:Type ListViewItem}">
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="BorderBrush"
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="ListViewItemStyle1" TargetType="{x:Type ListViewItem}">
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="BorderBrush"
                             Value="#85c0f4" />
-                    <Setter Property="BorderThickness" Value="1" />
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="False">
-                    <Setter Property="BorderBrush" Value="Transparent" />
-                    <Setter Property="BorderThickness" Value="0" />
-                </Trigger>
-            </Style.Triggers>
-            <Setter Property="LayoutTransform">
-                <Setter.Value>
-                    <ScaleTransform ScaleX="1.25" ScaleY="1.25"  />
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="Margin" Value="0"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ListViewItem}">
-                        <Border x:Name="Bd" Padding="10"
+                        <Setter Property="BorderThickness" Value="1" />
+                    </Trigger>
+                    <Trigger Property="IsMouseOver" Value="False">
+                        <Setter Property="BorderBrush" Value="Transparent" />
+                        <Setter Property="BorderThickness" Value="0" />
+                    </Trigger>
+                </Style.Triggers>
+                <Setter Property="LayoutTransform">
+                    <Setter.Value>
+                        <ScaleTransform ScaleX="1.25" ScaleY="1.25"  />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Foreground" Value="Black"/>
+                <Setter Property="Margin" Value="0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListViewItem}">
+                            <Border x:Name="Bd" Padding="10"
                          BorderBrush="Transparent"
                          BorderThickness="1"
                          Background="{TemplateBinding Background}">
-                            <GridViewRowPresenter HorizontalAlignment="Stretch" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Width="Auto" Margin="0" Content="{TemplateBinding Content}"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="IsMouseOver" Value="True" />
-                                </MultiTrigger.Conditions>
-                                <Setter Property="Background"
+                                <GridViewRowPresenter HorizontalAlignment="Stretch" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Width="Auto" Margin="0" Content="{TemplateBinding Content}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsMouseOver" Value="True" />
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Background"
                                         TargetName="Bd"
                                         Value="#85c0f4" />
-                                <Setter Property="BorderBrush" TargetName="Bd"
+                                    <Setter Property="BorderBrush" TargetName="Bd"
                                         Value="#1f6997" />
-                                <Setter Property="BorderThickness" TargetName="Bd"
+                                    <Setter Property="BorderThickness" TargetName="Bd"
                                         Value="1" />
-                            </MultiTrigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style TargetType="Border"
+                                </MultiTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style TargetType="Border"
                x:Key="RacePitBorderStyle">
-            <Style.Resources>
-                <LinearGradientBrush x:Key="BackBrush"
+                <Style.Resources>
+                    <LinearGradientBrush x:Key="BackBrush"
                                      StartPoint="0.5,0"
                                      EndPoint="0.5,1">
-                    <GradientStop Color="#EF3132"
+                        <GradientStop Color="#EF3132"
                                   Offset="0.1" />
-                    <GradientStop Color="#D62B2B"
+                        <GradientStop Color="#D62B2B"
                                   Offset="0.9" />
-                </LinearGradientBrush>
-            </Style.Resources>
-            <Setter Property="Background"
+                    </LinearGradientBrush>
+                </Style.Resources>
+                <Setter Property="Background"
                     Value="{StaticResource BackBrush}" />
-        </Style>
-        <DataTemplate x:Key="titleText">
-            <Border Background="Red" />
-        </DataTemplate>
-        <Style x:Key="expander"
+            </Style>
+            <DataTemplate x:Key="titleText">
+                <Border Background="Red" />
+            </DataTemplate>
+            <Style x:Key="expander"
                TargetType="{x:Type Expander}">
-            <Setter Property="HeaderTemplate"
+                <Setter Property="HeaderTemplate"
                     Value="{StaticResource titleText}" />
-        </Style>
-        <Style x:Key="GroupHeaderStyle"
+            </Style>
+            <Style x:Key="GroupHeaderStyle"
                TargetType="{x:Type GroupItem}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type GroupItem}">
-                        <Expander x:Name="exp"
-                                  IsExpanded="True">
-                            <Expander.Header>
-                                
-                                <StackPanel Orientation="Horizontal" Margin="10">
-                                    <TextBlock Text="Group: "
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type GroupItem}">
+                            <Expander x:Name="exp"
+                                  IsExpanded="True" >
+                                <Expander.Header>
+
+                                    <StackPanel Orientation="Horizontal" Margin="10">
+                                        <TextBlock Text="Group: "
                                                Margin="5,2,0,2"
                                                Style="{StaticResource bigText}" />
-                                <TextBlock Text="{Binding Name}" Margin="0,2,40,2" Style="{StaticResource bigText}" />
-                                    <TextBlock Text="{Binding ItemCount}"
+                                        <TextBlock Text="{Binding Name}" Margin="0,2,40,2" Style="{StaticResource bigText}" />
+                                        <TextBlock Text="{Binding ItemCount}"
                                                Margin="0,2,2,2"
                                                Style="{StaticResource bigText}" />
-                                    <TextBlock Text="duplicates"
+                                        <TextBlock Text="duplicates"
                                                Margin="0,2,0,2"
                                                Style="{StaticResource bigText}" />
-                                </StackPanel>
-                                
-                            </Expander.Header>
-                            <ItemsPresenter />
-                        </Expander>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        
+                                    </StackPanel>
+
+                                </Expander.Header>
+                                <ItemsPresenter />
+                            </Expander>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+        </ResourceDictionary> 
     </Application.Resources>
 </Application>

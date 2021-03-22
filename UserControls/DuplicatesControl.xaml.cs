@@ -60,11 +60,12 @@ namespace DuplicateCleaner.UserControls
             Loaded += DuplicatesControl_Loaded;
         }
 
-        private void SetSource(List<FileInfoWrapper> list)
+        private void SetSource(IEnumerable<FileInfoWrapper> list)
         {
-            //ListCollectionView collection = new ListCollectionView(list);
-            //collection.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
-            dg.ItemsSource = list;// collection;
+            if (list == null) return;
+            ListCollectionView collection = new ListCollectionView(list.ToList());
+            collection.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+            dg.ItemsSource = collection;
         }
 
         //private void SetSource1(ListCollectionView list)
@@ -106,8 +107,9 @@ namespace DuplicateCleaner.UserControls
             cmbFileType.SelectedIndex = 0;
             //cmbAutoSelect.SelectedIndex = 0;
             ImageControl.Source = null;
-            expander.Visibility = Visibility.Collapsed;
-            EnableButtons(false, btnOpen, btnReveal, btnMarkByFolder, btnMarkByType, btnMarkByGroup, btnUnmarkByFolder, btnUnmarkByGroup, btnUnmarkByType);
+            //expander.Visibility = Visibility.Collapsed;
+            txt.Text = "";
+            //EnableButtons(false, btnOpen, btnReveal, btnMarkByFolder, btnMarkByType, btnMarkByGroup, btnUnmarkByFolder, btnUnmarkByGroup, btnUnmarkByType);
         }
 
         internal void StartScan()
@@ -121,6 +123,7 @@ namespace DuplicateCleaner.UserControls
             //dg.ItemsSource = dupDataDict.Values;
             //SetSource(dupDataDict.Values.AsEnumerable<List<FileInfoWrapper>>());
             cts = new CancellationTokenSource();
+            //new Thread(() => StartProcess(cts.Token)).Start();
             Task.Run(() => StartProcess(cts.Token));
         }
 
@@ -171,8 +174,8 @@ namespace DuplicateCleaner.UserControls
                 FlushResult(Main.terminated);
                 if (searchInfo.CacheHashData)
                     HashHelper.CacheHash().ConfigureAwait(false);
-                if(dupList.Count > 0)
-                    expander.Visibility = Visibility.Visible;
+                //if(dupList.Count > 0)
+                //    expander.Visibility = Visibility.Visible;
             });            
         }
 
@@ -351,13 +354,11 @@ namespace DuplicateCleaner.UserControls
             }
         }
 
-        void SetFilter(Predicate<object> predicate)
+        void SetFilter(Func<FileInfoWrapper, bool> predicate)
         {
-            var itemSourceList = new CollectionViewSource() { Source = dupList };
+            var itemSourceList = new CollectionViewSource() { Source = dupList.Where(predicate) };
             ICollectionView Itemlist = itemSourceList.View;
-            Itemlist.Filter = predicate;
-            dg.ItemsSource = Itemlist;
-            //SetSource(Itemlist);
+            SetSource(Itemlist.SourceCollection as IEnumerable<FileInfoWrapper>);
         }
 
         #region Control Event Handlers
@@ -372,11 +373,7 @@ namespace DuplicateCleaner.UserControls
 
         private void EnableButtons(bool enable, params Button[] btns)
         {
-            grpItemActions.Visibility = enable ? Visibility.Visible : Visibility.Collapsed;
-            //foreach (var btn in btns)
-            //{
-            //    btn.Style = enable ? FindResource("mainLocal") as Style : FindResource("disabledLocal") as Style;
-            //}
+            //grpItemActions.Visibility = enable ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void dg_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -384,8 +381,8 @@ namespace DuplicateCleaner.UserControls
             var rowsCount = dg.SelectedItems.Count;
             if (rowsCount == 0 || rowsCount > 1) return;
 
-            EnableButtons(true, btnOpen, btnReveal, btnMarkByFolder, btnMarkByType, btnMarkByGroup, btnUnmarkByFolder, btnUnmarkByGroup, btnUnmarkByType);
-            dpMark.Visibility = Visibility.Visible;
+            //EnableButtons(true, btnOpen, btnReveal, btnMarkByFolder, btnMarkByType, btnMarkByGroup, btnUnmarkByFolder, btnUnmarkByGroup, btnUnmarkByType);
+            //dpMark.Visibility = Visibility.Visible;
             var fileInfo = dg.SelectedItem as FileInfoWrapper;
             if (fileInfo != null)
             {
@@ -415,19 +412,28 @@ namespace DuplicateCleaner.UserControls
 
         private void txt_TextChanged(object sender, TextChangedEventArgs e)
         {
-            SetFilter(new Predicate<object>(item => ((FileInfoWrapper)item).Name.IndexOf(txt.Text, StringComparison.InvariantCultureIgnoreCase) >= 0));
+            SetFilter(Filter);
         }
 
         private void cmbFileType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ResetGrid();
-            var fileType = (cmbFileType.SelectedItem as ComboBoxItem).Content.ToString();
-            SetFilter(new Predicate<object>(item => fileType == "All" || ((FileInfoWrapper)item).FileType.ToString() == fileType));
+            ResetGrid();            
+            SetFilter(Filter);
+        }
+
+        private Func<FileInfoWrapper, bool> Filter
+        {
+            get
+            {
+                var fileType = (cmbFileType.SelectedItem as ComboBoxItem).Content.ToString();
+                return item => item.Name.IndexOf(txt.Text, StringComparison.InvariantCultureIgnoreCase) >= 0 &&
+                (fileType == "All" || item.FileType.ToString() == fileType);
+            }
         }
 
         private void cmbAutoSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //HandleSelectionChange((cmbAutoSelect.SelectedItem as ComboBoxItem).Content.ToString());            
+            HandleSelectionChange((cmbAutoSelect.SelectedItem as ComboBoxItem).Content.ToString());
         }
 
         private void HandleSelectionChange(string autoSelect)
@@ -590,13 +596,13 @@ namespace DuplicateCleaner.UserControls
 
         private void Expander_Collapsed(object sender, RoutedEventArgs e)
         {
-            dpMark.Visibility = Visibility.Collapsed;
+            //dpMark.Visibility = Visibility.Collapsed;
         }
 
         private void Expander_Expanded(object sender, RoutedEventArgs e)
         {
-            if(dpMark != null)
-                dpMark.Visibility = Visibility.Visible;
+            //if(dpMark != null)
+            //    dpMark.Visibility = Visibility.Visible;
         }
 
         private void btnMarkAll_Click(object sender, RoutedEventArgs e)
@@ -612,6 +618,16 @@ namespace DuplicateCleaner.UserControls
         private void btnNewerFiles_Click(object sender, RoutedEventArgs e)
         {
             HandleSelectionChange("Newer files in group");
+        }
+
+        private void btnResetDeletion_Click(object sender, RoutedEventArgs e)
+        {
+            HandleSelectionChange("Newer files in group");
+        }
+
+        private void btnExpand_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private async void MenuItem_Reveal_Click(object sender, RoutedEventArgs e)

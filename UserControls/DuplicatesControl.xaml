@@ -1,4 +1,13 @@
-﻿<UserControl x:Class="DuplicateCleaner.UserControls.DuplicatesControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
+﻿<UserControl 
+    x:Class="DuplicateCleaner.UserControls.DuplicatesControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    mc:Ignorable="d" 
+    d:DesignHeight="450" 
+    d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -12,90 +21,13 @@
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
                 <DockPanel>
-                    <Expander x:Name="expander" ExpandDirection="Right"
-                              IsExpanded="True" Visibility="Collapsed"
-                              Margin="10,0,20,0" Collapsed="Expander_Collapsed" Expanded="Expander_Expanded">
-                        <Expander.Header>
-                            <DockPanel x:Name="dpMark" Margin="10" VerticalAlignment="Stretch">
-                                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                                <StackPanel>
-                                    <GroupBox>
-                                        <GroupBox.Header>
-                                            <TextBlock Text="Auto Mark for deletion"
-                                                       Style="{StaticResource bigText}" FontWeight="Bold" />
-                                        </GroupBox.Header>
-                                        <StackPanel>
-                                            <Button x:Name="btnNewerFiles"
-                                                    Style="{StaticResource mainLocal}"
-                                                    Content="Newer files in group"
-                                                    Click="btnNewerFiles_Click"
-                                                    Margin="0,20,0,5"></Button>
-                                            <Button x:Name="btnMarkAll" Style="{StaticResource mainLocal}"
-                                                Content="All"                                                    
-                                                    Click="btnMarkAll_Click"></Button>
-                                            <Button x:Name="btnUnmarkAll"
-                                                    Style="{StaticResource mainLocal}"
-                                                    Content="None"
-                                                    Click="btnUnmarkAll_Click"></Button>
-                                        </StackPanel>
-                                    </GroupBox>
-                                    <GroupBox Margin="0,20,0,0" x:Name="grpItemActions" Visibility="Collapsed">
-                                        <GroupBox.Header>
-                                            <TextBlock Text="Selected Item Actions"
-                                                       Style="{StaticResource bigText}" FontWeight="Bold" />
-                                        </GroupBox.Header>
-                                        <StackPanel>
-                                            <Button x:Name="btnOpen"
-                                                    Content="Open selected item"
-                                                        Style="{StaticResource mainLocal}"
-                                                    Click="MenuItem_Open_Click"
-                                                    Margin="0,20,0,5"></Button>
-                                            <Button x:Name="btnReveal"
-                                                    Content="Reveal in Explorer"
-                                                        Style="{StaticResource mainLocal}"
-                                                    Click="MenuItem_Reveal_Click"></Button>
-                                            <TextBlock Text="Mark for deletion"
-                                               Margin="0,20,0,0"
-                                               Style="{StaticResource bigText}" />
-                                    <Button x:Name="btnMarkByFolder"
-                                            Content="All files in this folder"
-                                                        Style="{StaticResource mainLocal}"
-                                            Click="MenuItem_MarkByFolder_Click"></Button>
-                                            <Button x:Name="btnMarkByType"
-                                                    Content="All files of this type"
-                                                        Style="{StaticResource mainLocal}"
-                                            Click="MenuItem_MarkByFileExtn_Click"></Button>
-                                            <Button x:Name="btnMarkByGroup"
-                                                    Content="All files in this group"
-                                                        Style="{StaticResource mainLocal}"
-                                                    Click="MenuItem_MarkByGroup_Click"></Button>
-                                            <TextBlock Text="UnMark for deletion"
-                                               Margin="0,20,0,0"
-                                               Style="{StaticResource bigText}" />
-                                            <Button x:Name="btnUnmarkByFolder" Content="All files in this folder"
-                                                        Style="{StaticResource mainLocal}"
-                                                    Click="MenuItem_ExcludeByFolder_Click"></Button>
-                                            <Button x:Name="btnUnmarkByType" Content="All files of this type"
-                                                        Style="{StaticResource mainLocal}"
-                                                    Click="MenuItem_ExcludeByFileExtn_Click"></Button>
-                                            <Button Name="btnUnmarkByGroup" Content="All files in this group"
-                                                        Style="{StaticResource mainLocal}"
-                                                    Click="MenuItem_ExcludeByGroup_Click"></Button>
-                                        </StackPanel>
-                                    </GroupBox>
-                                </StackPanel>
-                                </ScrollViewer>
-                            </DockPanel>
-                        </Expander.Header>
-                        <!--<TextBlock TextWrapping="Wrap" FontSize="14">Mark Assistant</TextBlock>-->
-                        
-                </Expander>
-                <DockPanel>
                     <StackPanel Margin="0,0,0,5" DockPanel.Dock="Top" Orientation="Horizontal">
                         <TextBox Padding="5" x:Name="txt" Width="200" HorizontalAlignment="Left" Tag="Search in File Name" TextChanged="txt_TextChanged" Style="{StaticResource MyWaterMarkStyle}" />
                         <CheckBox Margin="30,0,0,0" Content="Preview Image" x:Name="chkImagePreview" IsChecked="True" Style="{StaticResource chkSmallTransform}" Checked="chkImagePreview_Checked" Unchecked="chkImagePreview_Unchecked" />
+                        <Button Margin="30,0,0,0" Width="250" Content="Mark Newer files in group for Deletion" x:Name="btnResetDeletion" Style="{StaticResource mainLocal}" Click="btnResetDeletion_Click" />
+                        <!--<Button Margin="30,0,0,0" Width="120" Content="Expand All groups" x:Name="btnExpand" Style="{StaticResource localButton}" Click="btnExpand_Click" />-->
                     </StackPanel>
-                        <DataGrid SelectionChanged="dg_SelectionChanged" CellStyle="{StaticResource dgCell}" MouseDoubleClick="dg_MouseDoubleClick" x:Name="dg" Style="{StaticResource dg}" RowStyle="{StaticResource rowStyle}" ItemsSource="{Binding}">
+                        <DataGrid VirtualizingPanel.IsVirtualizingWhenGrouping="True" SelectionChanged="dg_SelectionChanged" CellStyle="{StaticResource dgCell}" MouseDoubleClick="dg_MouseDoubleClick" x:Name="dg" Style="{StaticResource dg}" RowStyle="{StaticResource rowStyle}" ItemsSource="{Binding}">
                             <DataGrid.GroupStyle>
                                 <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
                                     <GroupStyle.Panel>
@@ -132,23 +64,21 @@
                         <DataGrid.Columns>
                                 <DataGridTemplateColumn>
                                     <DataGridTemplateColumn.Header>
-                                        <StackPanel Orientation="Vertical"
-                                                    VerticalAlignment="Center">
-                                            <TextBlock Text="Mark for Deletion"
-                                                       HorizontalAlignment="Center" />
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                            <TextBlock Text="Auto Select for Deletion" HorizontalAlignment="Center" />
+                                            <ComboBox Margin="0,5,0,0" Width="135" x:Name="cmbAutoSelect" HorizontalAlignment="Center" SelectedIndex="0" SelectionChanged="cmbAutoSelect_SelectionChanged">
+                                                <ComboBoxItem Content="Newer files in group" />
+                                                <ComboBoxItem Content="All" />
+                                                <ComboBoxItem Content="None" />
+                                            </ComboBox>
                                         </StackPanel>
                                     </DataGridTemplateColumn.Header>
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <CheckBox Margin="5"
-                                                      VerticalAlignment="Center"
-                                                      Name="chkDiscontinue"
-                                                      Style="{StaticResource chkVCenter}"
-                                                      Click="chk_Click"
-                                                      IsChecked="{Binding Deleted, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            <CheckBox Margin="5" VerticalAlignment="Center" Name="chkDiscontinue" Style="{StaticResource chkVCenter}" Click="chk_Click" IsChecked="{Binding Deleted, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>                                
+                                </DataGridTemplateColumn>
                                 <DataGridTextColumn IsReadOnly="True" Header="Group" Binding="{Binding Group}" ElementStyle="{StaticResource txtVCenter}" />
                                 <DataGridTemplateColumn Width="SizeToCells"
                                                         IsReadOnly="True">
@@ -185,7 +115,7 @@
                     </DataGrid.Columns>
                 </DataGrid>
                 </DockPanel>
-                </DockPanel>
+                <!--</DockPanel>-->
                 <!--</Grid>-->
             </Grid>
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="Transparent" />
