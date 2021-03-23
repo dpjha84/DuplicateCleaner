@@ -68,13 +68,6 @@ namespace DuplicateCleaner.UserControls
             dg.ItemsSource = collection;
         }
 
-        //private void SetSource1(ListCollectionView list)
-        //{
-        //    ListCollectionView collection = new ListCollectionView(list);
-        //    collection.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
-        //    dg.ItemsSource = collection;
-        //}
-
         private void Dg_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
             e.Column.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
@@ -105,11 +98,9 @@ namespace DuplicateCleaner.UserControls
             SizeBytes = 0;
             deleteList.Clear();
             cmbFileType.SelectedIndex = 0;
-            //cmbAutoSelect.SelectedIndex = 0;
+            cmbAutoSelect.SelectedIndex = 0;
             ImageControl.Source = null;
-            //expander.Visibility = Visibility.Collapsed;
             txt.Text = "";
-            //EnableButtons(false, btnOpen, btnReveal, btnMarkByFolder, btnMarkByType, btnMarkByGroup, btnUnmarkByFolder, btnUnmarkByGroup, btnUnmarkByType);
         }
 
         internal void StartScan()
@@ -119,11 +110,7 @@ namespace DuplicateCleaner.UserControls
             dupDataDict.Clear();
             dupList.Clear();
             dg.ItemsSource = dupList;
-            //SetSource(dupList);
-            //dg.ItemsSource = dupDataDict.Values;
-            //SetSource(dupDataDict.Values.AsEnumerable<List<FileInfoWrapper>>());
             cts = new CancellationTokenSource();
-            //new Thread(() => StartProcess(cts.Token)).Start();
             Task.Run(() => StartProcess(cts.Token));
         }
 
@@ -174,8 +161,6 @@ namespace DuplicateCleaner.UserControls
                 FlushResult(Main.terminated);
                 if (searchInfo.CacheHashData)
                     HashHelper.CacheHash().ConfigureAwait(false);
-                //if(dupList.Count > 0)
-                //    expander.Visibility = Visibility.Visible;
             });            
         }
 
@@ -217,8 +202,6 @@ namespace DuplicateCleaner.UserControls
             ListCollectionView collection = new ListCollectionView(dupList);
             collection.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
             dg.ItemsSource = collection;
-            //dg.ItemsSource = dupList;
-            //SetSource(dupList);
             fileCountLabel.Text = dupDataDict.Count + " duplicate(s)";
             timeTakenLabel.Text = $"Time: {timeTaken.ToHumanTimeString()}";
             currentFileLabel.Text = "";
@@ -327,7 +310,7 @@ namespace DuplicateCleaner.UserControls
         void ShowPreviewGrid()
         {
             grid1.ColumnDefinitions.Clear();
-            var cd1 = new ColumnDefinition() { Width = new GridLength(2, GridUnitType.Star) };
+            var cd1 = new ColumnDefinition() { Width = new GridLength(3, GridUnitType.Star) };
             var cd2 = new ColumnDefinition() { Width = new GridLength(5, GridUnitType.Pixel) };
             var cd3 = new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) };
             grid1.ColumnDefinitions.Add(cd1);
@@ -371,18 +354,11 @@ namespace DuplicateCleaner.UserControls
             }
         }
 
-        private void EnableButtons(bool enable, params Button[] btns)
-        {
-            //grpItemActions.Visibility = enable ? Visibility.Visible : Visibility.Collapsed;
-        }
-
         private void dg_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var rowsCount = dg.SelectedItems.Count;
             if (rowsCount == 0 || rowsCount > 1) return;
 
-            //EnableButtons(true, btnOpen, btnReveal, btnMarkByFolder, btnMarkByType, btnMarkByGroup, btnUnmarkByFolder, btnUnmarkByGroup, btnUnmarkByType);
-            //dpMark.Visibility = Visibility.Visible;
             var fileInfo = dg.SelectedItem as FileInfoWrapper;
             if (fileInfo != null)
             {
@@ -458,7 +434,6 @@ namespace DuplicateCleaner.UserControls
                 default:
                     break;
             }
-            //dg.ItemsSource = dupList;
             SetSource(dupList);
             dg.Items.Refresh();
         }
@@ -589,45 +564,13 @@ namespace DuplicateCleaner.UserControls
                     HandleFileCheck(dupList[i - 1], false);
                 }
             }
-            //dg.ItemsSource = dupList;
             SetSource(dupList);
             dg.Items.Refresh();
-        }
-
-        private void Expander_Collapsed(object sender, RoutedEventArgs e)
-        {
-            //dpMark.Visibility = Visibility.Collapsed;
-        }
-
-        private void Expander_Expanded(object sender, RoutedEventArgs e)
-        {
-            //if(dpMark != null)
-            //    dpMark.Visibility = Visibility.Visible;
-        }
-
-        private void btnMarkAll_Click(object sender, RoutedEventArgs e)
-        {
-            HandleSelectionChange("All");
-        }
-
-        private void btnUnmarkAll_Click(object sender, RoutedEventArgs e)
-        {
-            HandleSelectionChange("None");
-        }
-
-        private void btnNewerFiles_Click(object sender, RoutedEventArgs e)
-        {
-            HandleSelectionChange("Newer files in group");
         }
 
         private void btnResetDeletion_Click(object sender, RoutedEventArgs e)
         {
             HandleSelectionChange("Newer files in group");
-        }
-
-        private void btnExpand_Click(object sender, RoutedEventArgs e)
-        {
-
         }
 
         private async void MenuItem_Reveal_Click(object sender, RoutedEventArgs e)
