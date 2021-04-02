@@ -28,17 +28,25 @@ namespace DuplicateCleaner
 
         public static LocationOptimizationResult GetOptimizedFolders(IEnumerable<Location> paths)
         {
-            var result = new LocationOptimizationResult();
-            result.ExcludedInTreeList = new HashSet<string>();
+            var result = new LocationOptimizationResult
+            {
+                ExcludedInTreeList = new HashSet<string>()
+            };
             var map = new HashSet<Location>();
             paths = paths.OrderBy(x => x.Name);
             foreach (var path in paths)
             {
-                if (!map.Contains(path, new LocationComparer()))
+                if (path.Include) 
                 {
-                    map.Add(path);
+                    if (TryMatch(map, path.Name, out Location match))
+                    {
+                        if (match.IncludeSubfolders.HasValue && !match.IncludeSubfolders.Value)
+                            map.Add(path);
+                    }
+                    else
+                        map.Add(path);
                 }
-                else if (path.Exclude)
+                else
                 {
                     result.ExcludedInTreeList.Add(path.Name);
                 }
@@ -47,17 +55,18 @@ namespace DuplicateCleaner
             return result;
         }
 
-        public class LocationComparer : IEqualityComparer<Location>
+        static bool TryMatch(HashSet<Location> map, string path, out Location match)
         {
-            public bool Equals(Location x, Location y)
+            match = null;
+            foreach (var item in map)
             {
-                return !x.Exclude && y.Name.IndexOf(x.Name, StringComparison.OrdinalIgnoreCase) >= 0;
+                if (path.IndexOf(item.Name, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    match = item;
+                    return true;
+                }
             }
-
-            public int GetHashCode(Location obj)
-            {
-                return obj.GetHashCode();
-            }
+            return false;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
@@ -314,7 +315,7 @@ namespace DuplicateCleaner.UserControls
                 else
                     textBlock.Foreground = System.Windows.Media.Brushes.LightGray;
             }
-            if ((sender as CheckBox).Content as Border != null)
+            if ((sender as ToggleButton).Content as Border != null)
                 ((sender as CheckBox).Content as Border).Background = col;
         }
 
@@ -345,7 +346,7 @@ namespace DuplicateCleaner.UserControls
         {
             var location = ((FrameworkElement)sender).DataContext as Location;
             location.IncludeSubfolders = true;
-            location.Exclude = false;
+            location.Include = true;
             lvLocations.Items.Refresh();
             SetBorderColor(sender, System.Windows.Media.Brushes.Green);
         }
@@ -360,8 +361,8 @@ namespace DuplicateCleaner.UserControls
         private void chkExclude_Checked(object sender, RoutedEventArgs e)
         {
             var location = ((FrameworkElement)sender).DataContext as Location;
-            location.Exclude = true;
-            location.IncludeSubfolders = false;
+            location.Include = true;
+            location.IncludeSubfolders = true;
             lvLocations.Items.Refresh();
             SetBorderColor(sender, System.Windows.Media.Brushes.Green);
         }
@@ -369,7 +370,9 @@ namespace DuplicateCleaner.UserControls
         private void chkExclude_Unchecked(object sender, RoutedEventArgs e)
         {
             var location = ((FrameworkElement)sender).DataContext as Location;
-            location.Exclude = false;
+            location.Include = false;
+            location.IncludeSubfolders = null;
+            lvLocations.Items.Refresh();
             SetBorderColor(sender, System.Windows.Media.Brushes.Gray);
         }
 

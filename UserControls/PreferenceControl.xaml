@@ -51,18 +51,24 @@
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-                                    <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}" />
-                                    <GridViewColumn Width="180">
+                                    <GridViewColumn Width="200" >
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <CheckBox Content="Include with Subfolders" Checked="chkSubfolders_Checked" Unchecked="chkSubfolders_Unchecked" x:Name="chkSubfolders" IsChecked="{Binding IncludeSubfolders}" />
+                                                <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}"/>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-                                    <GridViewColumn Width="80">
+                                    <GridViewColumn Width="180">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <CheckBox VerticalContentAlignment="Center" Content="Exclude" x:Name="chkExclude" Checked="chkExclude_Checked" Unchecked="chkExclude_Unchecked" IsChecked="{Binding Exclude}" />
+                                                <ToggleButton Content="" Style="{StaticResource ToggleButtonStyle1}" Checked="chkExclude_Checked" Unchecked="chkExclude_Unchecked" IsChecked="{Binding Include}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>                                    
+                                    <GridViewColumn Width="300">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ToggleButton x:Name="tbInclude" Content="Include with" Style="{StaticResource ToggleButtonStyle2}" IsChecked="{Binding IncludeSubfolders}" Checked="chkSubfolders_Checked" Unchecked="chkSubfolders_Unchecked"/>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
@@ -119,19 +125,6 @@
                             <ComboBoxItem Content="File Name" />
                         </ComboBox>
                     </StackPanel>
-                    <!--<StackPanel Orientation="Horizontal"
-                                Margin="10">
-                        <TextBlock Text="Auto Mark for deletion in group"
-                                   Style="{StaticResource bigText}"></TextBlock>
-                        <ComboBox Margin="20,0,0,0"
-                                  x:Name="cmbDefaultMarking"
-                                  HorizontalAlignment="Left"
-                                  SelectedIndex="0"
-                                  SelectionChanged="cmbDefaultMarking_SelectionChanged">
-                            <ComboBoxItem Content="Newer files in group" />
-                            <ComboBoxItem Content="None" />
-                        </ComboBox>
-                    </StackPanel>-->
                     <StackPanel Orientation="Horizontal"
                                 Margin="10">
                         <CheckBox x:Name="chkCacheScannedData"
@@ -372,8 +365,7 @@
                         </Grid>
                     </StackPanel>
                 </StackPanel>
-            </Border>
-            
+            </Border>            
         </Grid>
     </Grid>
 </UserControl>

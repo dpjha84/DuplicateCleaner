@@ -83,9 +83,11 @@ namespace DuplicateCleaner
     {
         public string Name { get; set; }
 
-        public bool IncludeSubfolders { get; set; } = true;
+        public bool? IncludeSubfolders { get; set; } = true;
 
-        public bool Exclude { get; set; }
+        public bool Include { get; set; } = true;
+
+        //public bool Include => !Exclude;
 
         public bool ExcludedInTree { get; set; }
 

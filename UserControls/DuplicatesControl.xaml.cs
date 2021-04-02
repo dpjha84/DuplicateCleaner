@@ -177,14 +177,15 @@ namespace DuplicateCleaner.UserControls
 
             var files = Enumerable.Empty<string>();
             var result = Extensions.GetOptimizedFolders(searchInfo.ScanLocations);
-            foreach (var item in result.UniqueFolders.Where(x => !x.Exclude))
+            foreach (var item in result.UniqueFolders.Where(x => x.Include))
+            //foreach (var item in searchInfo.ScanLocations.Where(x => x.Include))
             {
                 if (token.IsCancellationRequested) break;
                 var filter = new FileSearchFilter
                 {
-                    SearchOption = item.IncludeSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly,
+                    SearchOption = item.IncludeSubfolders.HasValue && item.IncludeSubfolders.Value ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly,
                     ExtensionList = new HashSet<string>(extensions),
-                    ExcludedList = result.ExcludedInTreeList,
+                    ExcludedList = new HashSet<string>(),//result.ExcludedInTreeList,
                     MinSize = searchInfo.MinSize,
                     MaxSize = searchInfo.MaxSize,
                     ModifyAfter = searchInfo.ModifiedAfter,
@@ -376,7 +377,7 @@ namespace DuplicateCleaner.UserControls
                             ImageControl.Source = BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
                         ResetGrid();
                     }
@@ -402,7 +403,9 @@ namespace DuplicateCleaner.UserControls
             get
             {
                 var fileType = (cmbFileType.SelectedItem as ComboBoxItem).Content.ToString();
-                return item => item.Name.IndexOf(txt.Text, StringComparison.InvariantCultureIgnoreCase) >= 0 &&
+                return item => (item.Name.IndexOf(txt.Text, StringComparison.InvariantCultureIgnoreCase) >= 0 ||
+                item.DirectoryName.IndexOf(txt.Text, StringComparison.InvariantCultureIgnoreCase) >= 0 ||
+                item.DateModified.ToString().IndexOf(txt.Text, StringComparison.InvariantCultureIgnoreCase) >= 0) &&
                 (fileType == "All" || item.FileType.ToString() == fileType);
             }
         }
