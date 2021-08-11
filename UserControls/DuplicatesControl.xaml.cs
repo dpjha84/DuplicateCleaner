@@ -368,13 +368,16 @@ namespace DuplicateCleaner.UserControls
                     ShowPreviewGrid();
                     try
                     {
-                        using (var ms = new MemoryStream())
+                        var image = new BitmapImage();
+                        using (var f = File.OpenRead(fileInfo.FullName))
                         {
-                            using (var stream = File.OpenRead(fileInfo.FullName))
-                            {
-                                stream.CopyTo(ms);
-                            }
-                            ImageControl.Source = BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                            var ms = new MemoryStream();
+                            f.CopyTo(ms);
+                            ms.Seek(0, SeekOrigin.Begin);
+                            image.BeginInit();
+                            image.StreamSource = ms;
+                            image.EndInit();
+                            ImageControl.Source = image;
                         }
                     }
                     catch (Exception ex)

@@ -147,7 +147,7 @@ namespace DuplicateCleaner.UserControls
         {
             var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
             var result = dialog.ShowDialog();
-            if (result.HasValue)
+            if (result.HasValue && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
             {
                 searchInfo.ScanLocations.Add(new Location { Name = dialog.SelectedPath });
                 lvLocations.ItemsSource = searchInfo.ScanLocations;
