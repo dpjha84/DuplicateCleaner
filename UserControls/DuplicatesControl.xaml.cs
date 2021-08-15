@@ -11,7 +11,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
 namespace DuplicateCleaner.UserControls
@@ -22,8 +21,6 @@ namespace DuplicateCleaner.UserControls
         TimeSpan timeTaken = TimeSpan.Zero;
         readonly List<string> deleteList = new List<string>();
         public event EventHandler<EventArgs> OnScanInitiated;
-        public event EventHandler<EventArgs> OnFileCountFetched;
-        public event EventHandler<ScanProgressingArgs> OnScanProgressing;
         public event EventHandler<DeleteProgressingArgs> OnDeleteProgressing;
         public event EventHandler<ScanCompletedArgs> OnScanCompleted;
         public event EventHandler<DeleteCompletedArgs> OnDeleteCompleted;
@@ -119,10 +116,7 @@ namespace DuplicateCleaner.UserControls
             var sw = Stopwatch.StartNew();
             var dataDict = new ConcurrentDictionary<string, List<FileInfoWrapper>>();
             var files = GetFiles(token);
-            var fileCount = files.Count();
 
-            int i = 1;
-            OnFileCountFetched(this, new EventArgs());
             ParallelLoopResult result = Parallel.ForEach(files, new ParallelOptions() { MaxDegreeOfParallelism = 4 },
                 (file1, state) =>
                 {
@@ -148,7 +142,6 @@ namespace DuplicateCleaner.UserControls
                         }
                         Dispatcher.Invoke(() =>
                         {
-                            OnScanProgressing(this, new ScanProgressingArgs { CurrentProgress = (i++) * 100 / fileCount });
                             currentFileLabel.Text = file1;
                             fileCountLabel.Text = dupDataDict.Count + " duplicate(s)";
                         });
@@ -178,14 +171,13 @@ namespace DuplicateCleaner.UserControls
             var files = Enumerable.Empty<string>();
             var result = Extensions.GetOptimizedFolders(searchInfo.ScanLocations);
             foreach (var item in result.UniqueFolders.Where(x => x.Include))
-            //foreach (var item in searchInfo.ScanLocations.Where(x => x.Include))
             {
                 if (token.IsCancellationRequested) break;
                 var filter = new FileSearchFilter
                 {
                     SearchOption = item.IncludeSubfolders.HasValue && item.IncludeSubfolders.Value ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly,
                     ExtensionList = new HashSet<string>(extensions),
-                    ExcludedList = new HashSet<string>(),//result.ExcludedInTreeList,
+                    ExcludedList = new HashSet<string>(),
                     MinSize = searchInfo.MinSize,
                     MaxSize = searchInfo.MaxSize,
                     ModifyAfter = searchInfo.ModifiedAfter,

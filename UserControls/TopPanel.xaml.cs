@@ -33,8 +33,6 @@ namespace DuplicateCleaner.UserControls
         private void TopPanel_Loaded(object sender, RoutedEventArgs e)
         {
             dupControl.OnScanInitiated += DupControl_OnScanInitiated;
-            dupControl.OnFileCountFetched += DupControl_OnFileCountFetched;
-            dupControl.OnScanProgressing += DupControl_OnScanProgressing;
             dupControl.OnScanCompleted += DupControl_OnScanCompleted;
             dupControl.OnScanStopping += DupControl_OnScanStopping;
             dupControl.OnDeleteInitiated += DupControl_OnDeleteInitiated;
@@ -68,7 +66,7 @@ namespace DuplicateCleaner.UserControls
 
         private void DupControl_OnScanStopping(object sender, EventArgs e)
         {
-            statusLabel.Text = "Stopping...";
+            txtProgress.Text = "Stopping...";
             button.IsEnabled = false;
             button.Content = "Start Scan";
         }
@@ -78,8 +76,9 @@ namespace DuplicateCleaner.UserControls
             Dispatcher.Invoke(() =>
             {
                 progressBar.Value = 100;
-                txtProgress.Text = "100%";
-                statusLabel.Text = e.StatusLabelText;
+                //txtProgress.Text = "100%";
+                progressBar.IsIndeterminate = false;
+                txtProgress.Text = e.StatusLabelText;
                 button.IsEnabled = true;
                 button.Content = "Start Scan";
                 btnDelete.Visibility = Visibility.Visible;
@@ -102,8 +101,9 @@ namespace DuplicateCleaner.UserControls
         {
             Dispatcher.Invoke(() =>
             {
-                progressBar.Value = e.CurrentProgress;
-                txtProgress.Text = $"{progressBar.Value}%";
+                //progressBar.IsIndeterminate = false;
+                //progressBar.Value = e.CurrentProgress;
+                //txtProgress.Text = $"{progressBar.Value}%";
             });
         }
 
@@ -121,16 +121,16 @@ namespace DuplicateCleaner.UserControls
         {
             Dispatcher.Invoke(() =>
             {
-                statusLabel.Text = "Scanning...";
+                //statusLabel.Text = "Scanning...";
                 button.Content = "Stop Scan";
                 progressBar.IsIndeterminate = true;
-                txtProgress.Text = "Analyzing";
+                txtProgress.Text = "Scanning...";
             });
         }
 
         private void BtnStart_Click(object sender, RoutedEventArgs e)
         {
-            statusLabel.Text = "";
+            txtProgress.Text = "";
             statusDeleteLabel.Text = "";
             gridScanProgress.Visibility = Visibility.Visible;
             gridDeleteProgress.Visibility = Visibility.Hidden;

@@ -55,7 +55,7 @@ namespace DuplicateCleaner
         
         private static bool MatchingExtension(string file, HashSet<string> extList)
         {
-            return extList.Count == 0 ? false : extList.Contains(".*") ? true : extList.Any(x => file.EndsWith(x, StringComparison.OrdinalIgnoreCase));
+            return extList.Count != 0 && (extList.Contains(".*") || extList.Any(x => file.EndsWith(x, StringComparison.OrdinalIgnoreCase)));
         }
     }
 }
