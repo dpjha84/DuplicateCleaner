@@ -27,7 +27,7 @@ namespace DuplicateCleaner.UserControls
             chkShowWelcomePage.IsChecked = SearchInfo.Instance.ShowWelcomePageAtStartup;
         }
 
-        private async void btnStartCriteria_Click(object sender, RoutedEventArgs e)
+        private void btnStartCriteria_Click(object sender, RoutedEventArgs e)
         {
             
             OnScanCriteriaClicked(this, new EventArgs());

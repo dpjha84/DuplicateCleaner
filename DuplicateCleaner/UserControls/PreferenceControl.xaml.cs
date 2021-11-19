@@ -260,7 +260,7 @@ namespace DuplicateCleaner.UserControls
         private void chkImages_Checked(object sender, RoutedEventArgs e)
         {
             searchInfo.IncludeImages = true;
-            SetBorderColor(sender, System.Windows.Media.Brushes.Green);
+            SetBorderColor(sender, SystemParameters.WindowGlassBrush);
         }
 
         private void chkImages_Unchecked(object sender, RoutedEventArgs e)
@@ -272,7 +272,7 @@ namespace DuplicateCleaner.UserControls
         private void chkMusic_Checked(object sender, RoutedEventArgs e)
         {
             searchInfo.IncludeAudios = true;
-            SetBorderColor(sender, System.Windows.Media.Brushes.Green);
+            SetBorderColor(sender, SystemParameters.WindowGlassBrush);
         }
 
         private void chkMusic_Unchecked(object sender, RoutedEventArgs e)
@@ -284,7 +284,7 @@ namespace DuplicateCleaner.UserControls
         private void chkVideo_Checked(object sender, RoutedEventArgs e)
         {
             searchInfo.IncludeVideos = true;
-            SetBorderColor(sender, System.Windows.Media.Brushes.Green);
+            SetBorderColor(sender, SystemParameters.WindowGlassBrush);
         }
 
         private void chkVideo_Unchecked(object sender, RoutedEventArgs e)
@@ -296,7 +296,7 @@ namespace DuplicateCleaner.UserControls
         private void chkDocs_Checked(object sender, RoutedEventArgs e)
         {
             searchInfo.IncludeDocuments = true;
-            SetBorderColor(sender, System.Windows.Media.Brushes.Green);
+            SetBorderColor(sender, SystemParameters.WindowGlassBrush);
         }
 
         private void chkDocs_Unchecked(object sender, RoutedEventArgs e)
@@ -310,7 +310,7 @@ namespace DuplicateCleaner.UserControls
             var textBlock = ((sender as CheckBox)?.Content as Border)?.Child as TextBlock;
             if (textBlock != null)
             {
-                if (col == System.Windows.Media.Brushes.Green)
+                if (col == SystemParameters.WindowGlassBrush)
                     textBlock.Foreground = System.Windows.Media.Brushes.White;
                 else
                     textBlock.Foreground = System.Windows.Media.Brushes.LightGray;
@@ -418,6 +418,16 @@ namespace DuplicateCleaner.UserControls
         {
             var types = txtCustomFileType.Text.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim());
             searchInfo.CustomFileTypes = types ?? Enumerable.Empty<string>();
+        }
+
+        private void chkSystemFolder_Checked(object sender, RoutedEventArgs e)
+        {
+            searchInfo.IncludeSystemFolders = true;
+        }
+
+        private void chkSystemFolder_Unchecked(object sender, RoutedEventArgs e)
+        {
+            searchInfo.IncludeSystemFolders = false;
         }
 
         //private void cmbDefaultMarking_SelectionChanged(object sender, SelectionChangedEventArgs e)

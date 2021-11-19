@@ -23,14 +23,14 @@
                            FontSize="20"
                            Text="Let's set the scan crietria and start the scan to find duplicates in your system."
                            HorizontalAlignment="Center" />
-                <Button Style="{StaticResource mainButton}"
+                <Button Style="{StaticResource AccentButtonStyle}"
                         Height="100"
                         FontSize="25"
                         Margin="0,20,0,20"
                         Width="400"
                         Content="Set Scan Criteria"
                         Name="btnStartCriteria"
-                        Click="btnStartCriteria_Click" />
+                        Click="btnStartCriteria_Click" HorizontalAlignment="Center" />
                 <CheckBox x:Name="chkShowWelcomePage"
                           Content="Show this page at startup"
                           Style="{StaticResource bigCheckbox}"

@@ -14,7 +14,13 @@ namespace DuplicateCleaner
             {
                 if (token.IsCancellationRequested) return Enumerable.Empty<string>();
                 var dir = new DirectoryInfo(path);
-                if (!filter.IncludeHiddenFolders && (dir.Parent != null && dir.Attributes.HasFlag(FileAttributes.Hidden)))
+                if ((!filter.IncludeHiddenFolders && (dir.Parent != null && dir.Attributes.HasFlag(FileAttributes.Hidden))))
+                    return Enumerable.Empty<string>();
+
+                if (!filter.IncludeSystemFolders && 
+                        ((dir.FullName == Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.System)).FullName) ||
+                        (dir.FullName == Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) ||
+                        (dir.FullName == Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)))))
                     return Enumerable.Empty<string>();
 
                 var dirFiles = Enumerable.Empty<string>();

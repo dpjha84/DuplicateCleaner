@@ -21,5 +21,7 @@ namespace DuplicateCleaner
         public DateTime? ModifyBefore { get; set; }
 
         public bool IncludeHiddenFolders { get; set; }
+
+        public bool IncludeSystemFolders { get; set; }
     }
 }

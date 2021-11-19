@@ -30,6 +30,8 @@ namespace DuplicateCleaner
 
     public class DeleteCompletedArgs : EventArgs
     {
+        public string DeleteStatusLabelText { get; set; }
+
         public string DeletedSize { get; set; }
 
         public List<DeletedFile> DeletedFiles { get; set; }

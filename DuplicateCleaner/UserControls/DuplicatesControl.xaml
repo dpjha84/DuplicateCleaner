@@ -24,10 +24,11 @@
                     <StackPanel Margin="0,0,0,5" DockPanel.Dock="Top" Orientation="Horizontal">
                         <TextBox Padding="5" x:Name="txt" Width="200" HorizontalAlignment="Left" Tag="Search in File Name" TextChanged="txt_TextChanged" Style="{StaticResource MyWaterMarkStyle}" />
                         <CheckBox Margin="30,0,0,0" Content="Preview Image" x:Name="chkImagePreview" IsChecked="True" Style="{StaticResource chkSmallTransform}" Checked="chkImagePreview_Checked" Unchecked="chkImagePreview_Unchecked" />
-                        <Button Margin="30,0,0,0" Width="250" Content="Mark Newer files in group for Deletion" x:Name="btnResetDeletion" Style="{StaticResource mainLocal}" Click="btnResetDeletion_Click" />
+                        <Button Margin="30,0,0,0" Width="280" Content="Mark Newer files in group for Deletion" x:Name="btnResetDeletion" Style="{StaticResource AccentButtonStyle}" Click="btnResetDeletion_Click" />
                         <!--<Button Margin="30,0,0,0" Width="120" Content="Expand All groups" x:Name="btnExpand" Style="{StaticResource localButton}" Click="btnExpand_Click" />-->
                     </StackPanel>
-                        <DataGrid VirtualizingPanel.IsVirtualizingWhenGrouping="True" SelectionChanged="dg_SelectionChanged" CellStyle="{StaticResource dgCell}" MouseDoubleClick="dg_MouseDoubleClick" x:Name="dg" Style="{StaticResource dg}" RowStyle="{StaticResource rowStyle}" ItemsSource="{Binding}">
+                    <!--<DataGrid ScrollViewer.CanContentScroll="True" VirtualizingPanel.IsVirtualizingWhenGrouping="True" SelectionChanged="dg_SelectionChanged" CellStyle="{StaticResource dgCell}" MouseDoubleClick="dg_MouseDoubleClick" x:Name="dg" Style="{StaticResource dg}" RowStyle="{StaticResource rowStyle}" ItemsSource="{Binding}">-->
+                    <DataGrid BorderBrush="LightGray" BorderThickness="1" Visibility="Visible" AutoGenerateColumns="False" ScrollViewer.CanContentScroll="True" VirtualizingPanel.IsVirtualizingWhenGrouping="True" SelectionChanged="dg_SelectionChanged" MouseDoubleClick="dg_MouseDoubleClick" x:Name="dg" ItemsSource="{Binding}">
                             <DataGrid.GroupStyle>
                                 <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
                                     <GroupStyle.Panel>
@@ -61,12 +62,12 @@
                                 </MenuItem>                                
                             </ContextMenu>
                         </DataGrid.ContextMenu>
-                        <DataGrid.Columns>
+                            <DataGrid.Columns>
                                 <DataGridTemplateColumn>
                                     <DataGridTemplateColumn.Header>
                                         <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                                             <TextBlock Text="Auto Select for Deletion" HorizontalAlignment="Center" />
-                                            <ComboBox Margin="0,5,0,0" Width="135" x:Name="cmbAutoSelect" HorizontalAlignment="Center" SelectedIndex="0" SelectionChanged="cmbAutoSelect_SelectionChanged">
+                                            <ComboBox Margin="0,5,0,0" Width="170" x:Name="cmbAutoSelect" HorizontalAlignment="Center" SelectedIndex="0" SelectionChanged="cmbAutoSelect_SelectionChanged">
                                                 <ComboBoxItem Content="Newer files in group" />
                                                 <ComboBoxItem Content="All" />
                                                 <ComboBoxItem Content="None" />
@@ -75,7 +76,7 @@
                                     </DataGridTemplateColumn.Header>
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <CheckBox Margin="5" VerticalAlignment="Center" Name="chkDiscontinue" Style="{StaticResource chkVCenter}" Click="chk_Click" IsChecked="{Binding Deleted, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            <CheckBox Margin="5" VerticalAlignment="Center" Name="chkDiscontinue" Click="chk_Click" Style="{StaticResource bigCheckbox}" IsChecked="{Binding Deleted, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -113,7 +114,47 @@
                         <DataGridTextColumn IsReadOnly="True" Header="Size" Binding="{Binding Size}" ElementStyle="{StaticResource txtVCenter}" />
                         <DataGridTextColumn Width="*" IsReadOnly="True" Header="Date Modified" Binding="{Binding DateModified}" ElementStyle="{StaticResource txtVCenter}" />
                     </DataGrid.Columns>
-                </DataGrid>
+                    </DataGrid>
+                    
+                    <ListView x:Name="dg2" Visibility="Visible" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListView.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.ContainerStyle>
+                                    <Style TargetType="{x:Type GroupItem}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <Expander IsExpanded="True">
+                                                        <Expander.Header>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="Gray" FontSize="22" VerticalAlignment="Bottom" />
+                                                                <TextBlock Text="{Binding ItemCount}" FontSize="22" Foreground="Green" FontWeight="Bold" FontStyle="Italic" Margin="10,0,0,0" VerticalAlignment="Bottom" />
+                                                                <TextBlock Text=" item(s)" FontSize="22" Foreground="Silver" FontStyle="Italic" VerticalAlignment="Bottom" />
+                                                            </StackPanel>
+                                                        </Expander.Header>
+                                                        <ItemsPresenter />
+                                                    </Expander>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </GroupStyle.ContainerStyle>
+                            </GroupStyle>
+                        </ListView.GroupStyle>
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Image Height="50" Width="50" Source="{Binding Icon}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Stretch="UniformToFill" />
+                                    <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Bottom" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
                 </DockPanel>
                 <!--</DockPanel>-->
                 <!--</Grid>-->

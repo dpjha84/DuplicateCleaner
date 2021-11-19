@@ -19,7 +19,7 @@ namespace DuplicateCleaner
                 var cacheData = FileHelper.Read(settingFile).Result;
                 Instance = string.IsNullOrWhiteSpace(cacheData) ? DefaultInstance : JsonConvert.DeserializeObject<SearchInfo>(cacheData);
             }
-            catch (Exception ex)
+            catch
             {
                 Instance = DefaultInstance;
             }
@@ -54,6 +54,8 @@ namespace DuplicateCleaner
         public bool IncludeDocuments { get; set; }
 
         public bool IncludeHiddenFolders { get; set; }
+
+        public bool IncludeSystemFolders { get; set; }
 
         public long MinSize { get; set; } = 1024 * 1024;
 

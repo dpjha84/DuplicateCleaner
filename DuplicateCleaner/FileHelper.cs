@@ -34,11 +34,11 @@ namespace DuplicateCleaner
             await FileIO.WriteTextAsync(file, data).AsTask().ConfigureAwait(false);
         }
 
-        public static void DeleteFile(string item, DeleteOption option)
+        public static async Task DeleteFileAsync(string item, DeleteOption option)
         {
-            FileSystem.DeleteFile(item, UIOption.OnlyErrorDialogs, 
+            await Task.Run(() => FileSystem.DeleteFile(item, UIOption.OnlyErrorDialogs, 
                 option == DeleteOption.PermanentDelete ? RecycleOption.DeletePermanently : RecycleOption.SendToRecycleBin,
-                UICancelOption.DoNothing);
+                UICancelOption.DoNothing));
         }
 
         public static async Task Delete(string fileName, StorageDeleteOption option)

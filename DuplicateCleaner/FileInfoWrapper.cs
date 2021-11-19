@@ -55,13 +55,20 @@ namespace DuplicateCleaner
         {
             get
             {
-                using (var sysicon = System.Drawing.Icon.ExtractAssociatedIcon(fileInfo.FullName))
+                try
                 {
-                    var bmpSrc = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
-                            sysicon.Handle,
-                            Int32Rect.Empty,
-                            BitmapSizeOptions.FromEmptyOptions());
-                    return bmpSrc;
+                    using (var sysicon = System.Drawing.Icon.ExtractAssociatedIcon(fileInfo.FullName))
+                    {
+                        var bmpSrc = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
+                                sysicon.Handle,
+                                Int32Rect.Empty,
+                                BitmapSizeOptions.FromEmptyOptions());
+                        return bmpSrc;
+                    }
+                }
+                catch (Exception)
+                {
+                    return null;
                 }
             }
         }

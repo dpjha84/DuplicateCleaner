@@ -12,7 +12,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <TextBlock Margin="20" x:Name="txtSummary" FontWeight="Bold" Foreground="Green" FontSize="36" HorizontalAlignment="Center" Grid.Row="0" />
-        <DataGrid Grid.Row="1" x:Name="dgDeleted" IsReadOnly="True" Style="{StaticResource dg}" AlternatingRowBackground="LightBlue" ItemsSource="{Binding}">
+        <DataGrid BorderBrush="LightGray" BorderThickness="1" Grid.Row="1" AutoGenerateColumns="False" x:Name="dgDeleted" IsReadOnly="True"  AlternatingRowBackground="LightGray" ItemsSource="{Binding}">
             <DataGrid.Columns>
             <DataGridTextColumn Header="Name" Binding="{Binding Name}" ElementStyle="{StaticResource txtVCenter}" />
             <DataGridTextColumn Header="Action Taken" Binding="{Binding ActionTaken}" ElementStyle="{StaticResource txtVCenter}" />

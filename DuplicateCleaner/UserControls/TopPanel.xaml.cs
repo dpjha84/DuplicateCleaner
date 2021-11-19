@@ -33,6 +33,8 @@ namespace DuplicateCleaner.UserControls
         private void TopPanel_Loaded(object sender, RoutedEventArgs e)
         {
             dupControl.OnScanInitiated += DupControl_OnScanInitiated;
+            dupControl.OnFileCountFetched += DupControl_OnFileCountFetched;
+            dupControl.OnScanProgressing += DupControl_OnScanProgressing;
             dupControl.OnScanCompleted += DupControl_OnScanCompleted;
             dupControl.OnScanStopping += DupControl_OnScanStopping;
             dupControl.OnDeleteInitiated += DupControl_OnDeleteInitiated;
@@ -49,8 +51,8 @@ namespace DuplicateCleaner.UserControls
         private void DupControl_OnDeleteCompleted(object sender, DeleteCompletedArgs e)
         {
             deleteProgressBar.Value = 100;
-            txtDeleteProgress.Text = $"100%";
-            statusDeleteLabel.Text = "Delete completed";
+            txtDeleteProgress.Text = e.DeleteStatusLabelText;
+            //statusDeleteLabel.Text = "Delete completed";
         }
 
         private void DupControl_OnDeleteProgressing(object sender, DeleteProgressingArgs e)
@@ -61,12 +63,13 @@ namespace DuplicateCleaner.UserControls
 
         private void DupControl_OnDeleteInitiated(object sender, EventArgs e)
         {
-            statusDeleteLabel.Text = "Deleting...";
+            txtDeleteProgress.Text = "Deleting...";
         }
 
         private void DupControl_OnScanStopping(object sender, EventArgs e)
         {
             txtProgress.Text = "Stopping...";
+            txtProgress1.Text = "Stopping...";
             button.IsEnabled = false;
             button.Content = "Start Scan";
         }
@@ -79,6 +82,13 @@ namespace DuplicateCleaner.UserControls
                 //txtProgress.Text = "100%";
                 progressBar.IsIndeterminate = false;
                 txtProgress.Text = e.StatusLabelText;
+
+                progressBar1.Value = 100;
+                //txtProgress.Text = "100%";
+                progressBar1.IsIndeterminate = false;
+                txtProgress1.Text = e.StatusLabelText;
+
+
                 button.IsEnabled = true;
                 button.Content = "Start Scan";
                 btnDelete.Visibility = Visibility.Visible;
@@ -101,9 +111,13 @@ namespace DuplicateCleaner.UserControls
         {
             Dispatcher.Invoke(() =>
             {
-                //progressBar.IsIndeterminate = false;
-                //progressBar.Value = e.CurrentProgress;
-                //txtProgress.Text = $"{progressBar.Value}%";
+                progressBar.IsIndeterminate = false;
+                progressBar.Value = e.CurrentProgress;
+                txtProgress.Text = $"{progressBar.Value}%";
+
+                progressBar1.IsIndeterminate = false;
+                progressBar1.Value = e.CurrentProgress;
+                txtProgress1.Text = $"{progressBar1.Value}%";
             });
         }
 
@@ -114,6 +128,10 @@ namespace DuplicateCleaner.UserControls
                 progressBar.IsIndeterminate = false;
                 progressBar.Value = 0;
                 txtProgress.Text = $"{progressBar.Value}%";
+
+                progressBar1.IsIndeterminate = false;
+                progressBar1.Value = 0;
+                txtProgress1.Text = $"{progressBar1.Value}%";
             });
         }
 
@@ -125,14 +143,19 @@ namespace DuplicateCleaner.UserControls
                 button.Content = "Stop Scan";
                 progressBar.IsIndeterminate = true;
                 txtProgress.Text = "Scanning...";
+
+                progressBar1.IsIndeterminate = true;
+                txtProgress1.Text = "Scanning...";
             });
         }
 
         private void BtnStart_Click(object sender, RoutedEventArgs e)
         {
             txtProgress.Text = "";
-            statusDeleteLabel.Text = "";
+            txtProgress1.Text = "";
+            //statusDeleteLabel.Text = "";
             gridScanProgress.Visibility = Visibility.Visible;
+            //gridScanProgress1.Visibility = Visibility.Visible;
             gridDeleteProgress.Visibility = Visibility.Hidden;
             sep1.Visibility = Visibility.Hidden;
             deleteProgressBar.Value = 0;
@@ -145,11 +168,19 @@ namespace DuplicateCleaner.UserControls
                 OnScanStopped(this, new EventArgs());
         }
 
-        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        private async void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            gridDeleteProgress.Visibility = Visibility.Visible;
-            sep1.Visibility = Visibility.Visible;
-            OnDeleteStared(this, new EventArgs());
+            ModalWindow modalWindow = new ModalWindow();
+            modalWindow.ShowDialog();
+            //string valueFromModalTextBox = ModalWindow.delete;
+            //var result = MessageBox.Show("Files will be deleted", "Deletion Summary", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (ModalWindow.delete)
+            {
+                gridDeleteProgress.Visibility = Visibility.Visible;
+                sep1.Visibility = Visibility.Visible;
+                //OnDeleteStared(this, new EventArgs());
+                await dupControl.TopPanel_OnDeleteStared(null, null).ConfigureAwait(false);
+            }
         }
 
         private async void btnHelp_Click(object sender, RoutedEventArgs e)

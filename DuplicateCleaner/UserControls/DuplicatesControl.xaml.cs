@@ -21,6 +21,8 @@ namespace DuplicateCleaner.UserControls
         TimeSpan timeTaken = TimeSpan.Zero;
         readonly List<string> deleteList = new List<string>();
         public event EventHandler<EventArgs> OnScanInitiated;
+        public event EventHandler<EventArgs> OnFileCountFetched;
+        public event EventHandler<ScanProgressingArgs> OnScanProgressing;
         public event EventHandler<DeleteProgressingArgs> OnDeleteProgressing;
         public event EventHandler<ScanCompletedArgs> OnScanCompleted;
         public event EventHandler<DeleteCompletedArgs> OnDeleteCompleted;
@@ -46,23 +48,57 @@ namespace DuplicateCleaner.UserControls
         public MainWindow Main { get; set; }
         public TopPanel TopPanel { get; set; }
         public CleanupSummary CleanupWindow { get; set; }
-
+        string view = "grid";
         public DuplicatesControl()
         {
             InitializeComponent();
             chkImagePreview.IsChecked = true;
             searchInfo = SearchInfo.Instance;
-            dg.AutoGeneratingColumn += Dg_AutoGeneratingColumn;
+            //dg1.AutoGeneratingColumn += Dg_AutoGeneratingColumn;
             SetSource(dupList);
             Loaded += DuplicatesControl_Loaded;
         }
 
+        //void Set()
+        //{
+        //    if (view == "grid")
+        //    {
+        //        if (dg2 != null)
+        //            dg2.ItemsSource = collection;
+        //    }
+        //    else
+        //    {
+        //        if (dg1 != null)
+        //            dg1.ItemsSource = collection;
+        //    }
+        //}
+        ItemsControl dg1 = null;
         private void SetSource(IEnumerable<FileInfoWrapper> list)
         {
             if (list == null) return;
             ListCollectionView collection = new ListCollectionView(list.ToList());
             collection.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
-            dg.ItemsSource = collection;
+            
+            if (view == "grid1")
+            {
+                dg.Visibility = Visibility.Collapsed;
+                dg2.Visibility = Visibility.Visible;
+                dg1 = dg2;
+                //if (dg2 != null)
+                //    dg2.ItemsSource = collection;
+            }
+            else
+            {
+                dg.Visibility = Visibility.Visible;
+                //dg2.Visibility = Visibility.Collapsed;
+                dg1 = dg;
+                //if (dg1 != null)
+                //    dg1.ItemsSource = collection;
+            }
+            if (dg1 != null)
+            {
+                dg1.ItemsSource = collection;
+            }
         }
 
         private void Dg_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
@@ -82,7 +118,7 @@ namespace DuplicateCleaner.UserControls
             {
                 TopPanel.OnScanStared += TopPanel_OnScanStared;
                 TopPanel.OnScanStopped += TopPanel_OnScanStopped;
-                TopPanel.OnDeleteStared += TopPanel_OnDeleteStared;
+                //TopPanel.OnDeleteStared += TopPanel_OnDeleteStared;
             }
             ResetGrid();
         }
@@ -94,8 +130,8 @@ namespace DuplicateCleaner.UserControls
             currentFileLabel.Text = "";
             SizeBytes = 0;
             deleteList.Clear();
-            cmbFileType.SelectedIndex = 0;
-            cmbAutoSelect.SelectedIndex = 0;
+            //cmbFileType.SelectedIndex = 0;
+            //cmbAutoSelect.SelectedIndex = 0;
             ImageControl.Source = null;
             txt.Text = "";
         }
@@ -106,7 +142,7 @@ namespace DuplicateCleaner.UserControls
             OnScanInitiated(this, new EventArgs());
             dupDataDict.Clear();
             dupList.Clear();
-            dg.ItemsSource = dupList;
+            dg1.ItemsSource = dupList;
             cts = new CancellationTokenSource();
             Task.Run(() => StartProcess(cts.Token));
         }
@@ -116,7 +152,10 @@ namespace DuplicateCleaner.UserControls
             var sw = Stopwatch.StartNew();
             var dataDict = new ConcurrentDictionary<string, List<FileInfoWrapper>>();
             var files = GetFiles(token);
+            var fileCount = files.Count();
 
+            int i = 1;
+            OnFileCountFetched(this, new EventArgs());
             ParallelLoopResult result = Parallel.ForEach(files, new ParallelOptions() { MaxDegreeOfParallelism = 4 },
                 (file1, state) =>
                 {
@@ -142,8 +181,9 @@ namespace DuplicateCleaner.UserControls
                         }
                         Dispatcher.Invoke(() =>
                         {
+                            OnScanProgressing(this, new ScanProgressingArgs { CurrentProgress = (i++) * 100 / fileCount });
                             currentFileLabel.Text = file1;
-                            fileCountLabel.Text = dupDataDict.Count + " duplicate(s)";
+                            fileCountLabel.Text = dupDataDict.Count + " duplicate group(s)";
                         });
                     }
                 }
@@ -182,7 +222,8 @@ namespace DuplicateCleaner.UserControls
                     MaxSize = searchInfo.MaxSize,
                     ModifyAfter = searchInfo.ModifiedAfter,
                     ModifyBefore = searchInfo.ModifiedBefore,
-                    IncludeHiddenFolders = searchInfo.IncludeHiddenFolders
+                    IncludeHiddenFolders = searchInfo.IncludeHiddenFolders,
+                    IncludeSystemFolders = searchInfo.IncludeSystemFolders
                 };
                 files = files.Concat(SafeFileEnumerator.EnumerateFiles(item.Name, filter, token));
             }
@@ -194,8 +235,8 @@ namespace DuplicateCleaner.UserControls
             dupList = AttachGroupAndFlattenList(dupDataDict.Values.OrderByDescending(x => x.Sum(z => z.Length)), true);
             ListCollectionView collection = new ListCollectionView(dupList);
             collection.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
-            dg.ItemsSource = collection;
-            fileCountLabel.Text = dupDataDict.Count + " duplicate(s)";
+            dg1.ItemsSource = collection;
+            fileCountLabel.Text = dupDataDict.Count + " duplicate group(s)";
             timeTakenLabel.Text = $"Time: {timeTaken.ToHumanTimeString()}";
             currentFileLabel.Text = "";
             Main.terminated = false;
@@ -230,43 +271,38 @@ namespace DuplicateCleaner.UserControls
             return list;
         }
 
-        private void TopPanel_OnDeleteStared(object sender, EventArgs e)
+        internal async Task TopPanel_OnDeleteStared(object sender, EventArgs e)
         {
             if (SizeBytes == 0) return;
-            Task.Run(() =>
+            await Dispatcher.InvokeAsync(async () =>
             {
-                Dispatcher.Invoke(() =>
+                OnDeleteInitiated(this, new EventArgs());
+                long deleted = 0;
+                var files = new List<DeletedFile>();
+                foreach (var item in deleteList)
                 {
-                    OnDeleteInitiated(this, new EventArgs());
-                    long deleted = 0;
-                    var files = new List<DeletedFile>();
-                    foreach (var item in deleteList)
+                    try
                     {
-                        try
+                        deleted += new FileInfo(item).Length;
+                        if (SizeBytes > 0)
                         {
-                            deleted += new FileInfo(item).Length;
-                            if (SizeBytes > 0)
-                            {
                                 OnDeleteProgressing(this, new DeleteProgressingArgs { CurrentProgress = (deleted * 100) / SizeBytes });
-                            }
-                            files.Add(new DeletedFile
-                            {
-                                Name = item,
-                                ActionTaken = searchInfo.DeleteOption == DeleteOption.SendToRecycleBin ?
-                                "Moved to Recycle Bin" : "Deleted Permanently"
-                            });
-                            FileHelper.DeleteFile(item, searchInfo.DeleteOption);
                         }
-                        catch (Exception)
+                        files.Add(new DeletedFile
                         {
+                            Name = item,
+                            ActionTaken = searchInfo.DeleteOption == DeleteOption.SendToRecycleBin ?
+                            "Moved to Recycle Bin" : "Deleted Permanently"
+                        });
+                        await FileHelper.DeleteFileAsync(item, searchInfo.DeleteOption);
                         }
+                    catch (Exception)
+                    {
                     }
-                    SizeBytes = 0;
-                    OnDeleteCompleted(this, new DeleteCompletedArgs { DeletedSize = SizeHelper.Suffix(deleted), DeletedFiles = files });
                 }
-                );
-            }
-            );
+                SizeBytes = 0;
+                OnDeleteCompleted(this, new DeleteCompletedArgs { DeletedSize = SizeHelper.Suffix(deleted), DeletedFiles = files, DeleteStatusLabelText = "Delete Completed" });
+            });
         }
 
         private void TopPanel_OnScanStopped(object sender, EventArgs e)
@@ -332,6 +368,7 @@ namespace DuplicateCleaner.UserControls
 
         void SetFilter(Func<FileInfoWrapper, bool> predicate)
         {
+            if(predicate == null) return;
             var itemSourceList = new CollectionViewSource() { Source = dupList.Where(predicate) };
             ICollectionView Itemlist = itemSourceList.View;
             SetSource(Itemlist.SourceCollection as IEnumerable<FileInfoWrapper>);
@@ -349,10 +386,10 @@ namespace DuplicateCleaner.UserControls
 
         private void dg_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var rowsCount = dg.SelectedItems.Count;
+            var rowsCount = (dg1 as DataGrid).SelectedItems.Count;
             if (rowsCount == 0 || rowsCount > 1) return;
 
-            var fileInfo = dg.SelectedItem as FileInfoWrapper;
+            var fileInfo = (dg1 as DataGrid).SelectedItem as FileInfoWrapper;
             if (fileInfo != null)
             {
                 if (imagePreview && FileHelper.Pics.Contains(Path.GetExtension(fileInfo.FullName)))
@@ -372,7 +409,7 @@ namespace DuplicateCleaner.UserControls
                             ImageControl.Source = image;
                         }
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         ResetGrid();
                     }
@@ -407,6 +444,7 @@ namespace DuplicateCleaner.UserControls
 
         private void cmbAutoSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            //if (cmbAutoSelect1 == null) return;
             HandleSelectionChange((cmbAutoSelect.SelectedItem as ComboBoxItem).Content.ToString());
         }
 
@@ -433,7 +471,7 @@ namespace DuplicateCleaner.UserControls
                     break;
             }
             SetSource(dupList);
-            dg.Items.Refresh();
+            dg1.Items.Refresh();
         }
 
         private void chkImagePreview_Checked(object sender, RoutedEventArgs e)
@@ -449,7 +487,7 @@ namespace DuplicateCleaner.UserControls
 
         private async void dg_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            var fileInfo = dg.SelectedItem as FileInfoWrapper;
+            var fileInfo = (dg1 as DataGrid).SelectedItem as FileInfoWrapper;
             if (fileInfo == null) return;
             await Windows.System.Launcher.LaunchUriAsync(new Uri(fileInfo.FullName));
         }
@@ -457,14 +495,14 @@ namespace DuplicateCleaner.UserControls
         private async void MenuItem_Open_Click(object sender, RoutedEventArgs e)
         {
             ResetGrid();
-            var fileInfo = dg.SelectedItem as FileInfoWrapper;
+            var fileInfo = (dg1 as DataGrid).SelectedItem as FileInfoWrapper;
             await Windows.System.Launcher.LaunchUriAsync(new Uri(fileInfo.FullName));
         }
 
         private void MenuItem_ExcludeByFolder_Click(object sender, RoutedEventArgs e)
         {
             ResetGrid();
-            var fileInfo = dg.SelectedItem as FileInfoWrapper;
+            var fileInfo = (dg1 as DataGrid).SelectedItem as FileInfoWrapper;
             foreach (var item in dupList)
             {
                 if (item.Deleted && item.DirectoryName == fileInfo.DirectoryName)
@@ -475,13 +513,13 @@ namespace DuplicateCleaner.UserControls
             }
             //dg.ItemsSource = dupList;
             SetSource(dupList);
-            dg.Items.Refresh();
+            dg1.Items.Refresh();
         }
 
         private void MenuItem_ExcludeByFileExtn_Click(object sender, RoutedEventArgs e)
         {
             ResetGrid();
-            var fileInfo = dg.SelectedItem as FileInfoWrapper;
+            var fileInfo = (dg1 as DataGrid).SelectedItem as FileInfoWrapper;
             foreach (var item in dupList)
             {
                 if (item.Deleted && Path.GetExtension(item.FullName) == Path.GetExtension(fileInfo.FullName))
@@ -492,13 +530,13 @@ namespace DuplicateCleaner.UserControls
             }
             //dg.ItemsSource = dupList;
             SetSource(dupList);
-            dg.Items.Refresh();
+            dg1.Items.Refresh();
         }
 
         private void MenuItem_MarkByFolder_Click(object sender, RoutedEventArgs e)
         {
             ResetGrid();
-            var fileInfo = dg.SelectedItem as FileInfoWrapper;
+            var fileInfo =(dg1 as DataGrid).SelectedItem as FileInfoWrapper;
             foreach (var item in dupList)
             {
                 if (!item.Deleted && item.DirectoryName == fileInfo.DirectoryName)
@@ -509,13 +547,13 @@ namespace DuplicateCleaner.UserControls
             }
             //dg.ItemsSource = dupList;
             SetSource(dupList);
-            dg.Items.Refresh();
+            dg1.Items.Refresh();
         }
 
         private void MenuItem_MarkByFileExtn_Click(object sender, RoutedEventArgs e)
         {
             ResetGrid();
-            var fileInfo = dg.SelectedItem as FileInfoWrapper;
+            var fileInfo = (dg1 as DataGrid).SelectedItem as FileInfoWrapper;
             foreach (var item in dupList)
             {
                 if (!item.Deleted && Path.GetExtension(item.FullName) == Path.GetExtension(fileInfo.FullName))
@@ -526,32 +564,40 @@ namespace DuplicateCleaner.UserControls
             }
             //dg.ItemsSource = dupList;
             SetSource(dupList);
-            dg.Items.Refresh();
+            dg1.Items.Refresh();
         }
 
         private void MenuItem_MarkByGroup_Click(object sender, RoutedEventArgs e)
         {
             ResetGrid();
-            var fileInfo = dg.SelectedItem as FileInfoWrapper;
+            var fileInfo = (dg1 as DataGrid).SelectedItem as FileInfoWrapper;
             for (int i = 1; i < dupList.Count; i++)
             {
-                if (!dupList[i].Deleted && dupList[i].Group == fileInfo.Group && dupList[i].Group == dupList[i-1].Group)
+                if (dupList[i].Group == fileInfo.Group)
                 {
-                    dupList[i].Deleted = true;
-                    dupList[i-1].Deleted = true;
-                    HandleFileCheck(dupList[i], true);
-                    HandleFileCheck(dupList[i-1], true);
+                    if (!dupList[i].Deleted && dupList[i].Group == dupList[i - 1].Group)
+                    {
+                        dupList[i].Deleted = true;
+                        dupList[i - 1].Deleted = true;
+                        HandleFileCheck(dupList[i], true);
+                        HandleFileCheck(dupList[i - 1], true);
+                    }
+                }
+                else
+                {
+                    dupList[i].Deleted = false;
+                    HandleFileCheck(dupList[i], false);
                 }
             }
             //dg.ItemsSource = dupList;
             SetSource(dupList);
-            dg.Items.Refresh();
+            dg1.Items.Refresh();
         }
 
         private void MenuItem_ExcludeByGroup_Click(object sender, RoutedEventArgs e)
         {
             ResetGrid();
-            var fileInfo = dg.SelectedItem as FileInfoWrapper;
+            var fileInfo = (dg1 as DataGrid).SelectedItem as FileInfoWrapper;
             for (int i = 1; i < dupList.Count; i++)
             {
                 if (dupList[i].Deleted && dupList[i].Group == fileInfo.Group && dupList[i].Group == dupList[i - 1].Group)
@@ -559,11 +605,12 @@ namespace DuplicateCleaner.UserControls
                     dupList[i].Deleted = false;
                     dupList[i - 1].Deleted = false;
                     HandleFileCheck(dupList[i], false);
-                    HandleFileCheck(dupList[i - 1], false);
+                    if(dupList[i -1].Deleted)
+                        HandleFileCheck(dupList[i - 1], false);
                 }
             }
             SetSource(dupList);
-            dg.Items.Refresh();
+            dg1.Items.Refresh();
         }
 
         private void btnResetDeletion_Click(object sender, RoutedEventArgs e)
@@ -574,7 +621,7 @@ namespace DuplicateCleaner.UserControls
         private async void MenuItem_Reveal_Click(object sender, RoutedEventArgs e)
         {
             ResetGrid();
-            var fileInfo = dg.SelectedItem as FileInfoWrapper;
+            var fileInfo = (dg1 as DataGrid).SelectedItem as FileInfoWrapper;
             await Windows.System.Launcher.LaunchUriAsync(new Uri(fileInfo.DirectoryName));
         }
         #endregion

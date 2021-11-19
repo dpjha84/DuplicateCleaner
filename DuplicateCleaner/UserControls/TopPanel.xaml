@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DuplicateCleaner.UserControls"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             xmlns:xrpb="http://XamlRadialProgressBar/DotNet"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -17,7 +19,7 @@
             <StackPanel Orientation="Horizontal"
                         Margin="10">
                 <Button x:Name="button"
-                        Style="{StaticResource mainButton}"
+                        Style="{StaticResource AccentButtonStyle}"
                         Height="40"
                         IsDefault="True"
                         Content="Start Scan"
@@ -32,15 +34,31 @@
                 <Grid Margin="20,0,20,0"
                       x:Name="gridScanProgress"
                       Visibility="Hidden">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
                     <ProgressBar Height="30"
                                  Width="300"
                                  Maximum="100"
                                  Name="progressBar"
                                  Minimum="0" />
-                    <TextBlock x:Name="txtProgress"
+                    <TextBlock Grid.Row="1" x:Name="txtProgress"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
                                FontWeight="DemiBold"
+                               Foreground="Black" />
+                </Grid>
+                <Grid Margin="20,0,20,0"
+                      x:Name="gridScanProgress1"
+                      Visibility="Collapsed">
+                    <xrpb:RadialProgressBar x:Name="progressBar1"
+			    Width="100" Height="100"
+			    Foreground="{Binding Source={x:Static SystemParameters.WindowGlassBrush}}" />
+                    <TextBlock x:Name="txtProgress1"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontSize="10"
                                Foreground="Black" />
                 </Grid>
                 <StackPanel Orientation="Horizontal">
@@ -56,21 +74,23 @@
                         Content="Delete Duplicates"
                         Margin="30,0,0,0"
                         Width="200" />
-                <TextBlock x:Name="statusDeleteLabel"
+                <!--<TextBlock x:Name="statusDeleteLabel"
                            FontWeight="Bold"
-                           Foreground="Green"
                            Margin="30,0,0,0"
-                           Width="100"
-                           VerticalAlignment="Center" />
+                           VerticalAlignment="Center" />-->
                 <Grid Margin="20,0,20,0"
                       x:Name="gridDeleteProgress"
                       Visibility="Hidden">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
                     <ProgressBar Height="30"
                                  Width="300"
                                  Maximum="100"
                                  Name="deleteProgressBar"
                                  Minimum="0" />
-                    <TextBlock x:Name="txtDeleteProgress"
+                    <TextBlock Grid.Row="1" x:Name="txtDeleteProgress"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
                                FontWeight="DemiBold"
@@ -83,7 +103,7 @@
                                Background="Gray" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                <Button x:Name="btnHelp"
+                    <Button x:Name="btnHelp"
                         Visibility="Visible"
                         Style="{StaticResource deleteButton}"
                             Click="btnHelp_Click"

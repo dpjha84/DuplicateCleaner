@@ -72,11 +72,11 @@
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-                                    <GridViewColumn>
+                                    <GridViewColumn Width="40">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button BorderThickness="0" Width="15" Height="15" Background="Transparent" Name="btnRemoveLocation" Click="btnRemoveLocation_Click">
-                                                    <Image Name="img2" Source="{Binding RemoveIcon}"  />
+                                                <Button BorderThickness="0" Width="35" Height="35" Background="Transparent" Name="btnRemoveLocation" Click="btnRemoveLocation_Click">
+                                                    <Image Width="20" Height="20" Name="img2" Source="{Binding RemoveIcon}"  />
                                                 </Button>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
@@ -86,6 +86,7 @@
                         </ListView>
                         <StackPanel Orientation="Horizontal" Grid.Row="3" VerticalAlignment="Bottom">
                             <CheckBox x:Name="chkHiddenFolder" Content="Include Hidden Folders" Style="{StaticResource bigCheckbox}" VerticalContentAlignment="Bottom" VerticalAlignment="Bottom" Checked="chkHiddenFolder_Checked" Unchecked="chkHiddenFolder_Unchecked"/>
+                            <CheckBox Margin="20,0,0,0" x:Name="chkSystemFolder" Content="Include System Folders" Style="{StaticResource bigCheckbox}" VerticalContentAlignment="Bottom" VerticalAlignment="Bottom" Checked="chkSystemFolder_Checked" Unchecked="chkSystemFolder_Unchecked"/>
                         </StackPanel>
                     </Grid>
                 </ScrollViewer>

@@ -5,10 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:DuplicateCleaner.UserControls"
         mc:Ignorable="d"
-        Title="Duplicate Remover Pro" Height="350" Width="525" WindowState="Maximized" Icon="..\images\cleaner.png" >
-    <Window.Resources>
-
-    </Window.Resources>
+        Title="Duplicate Remover Pro" Height="350" Width="525" WindowState="Maximized" Icon="..\images\cleaner.png"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        ui:WindowHelper.UseModernWindowStyle="True">
 
     <Grid>
         <Grid>
@@ -32,7 +31,7 @@
                             <TextBlock Text="Scan Criteria" Style="{StaticResource bigText}" />
                         </StackPanel>
                     </TabItem.Header>
-                    <controls:PreferenceControl />
+                    <controls:PreferenceControl BorderBrush="LightGray" BorderThickness="0" />
                 </TabItem>
                 <TabItem Visibility="Collapsed">
                     <TabItem.Header>
@@ -40,7 +39,7 @@
                             <TextBlock Text="Duplicate Preview" Style="{StaticResource bigText}" />
                         </StackPanel>
                     </TabItem.Header>
-                    <controls:DuplicatesControl x:Name="dupControl" />
+                    <controls:DuplicatesControl BorderBrush="LightGray" BorderThickness="0" x:Name="dupControl" />
                 </TabItem>
                 <TabItem Visibility="Collapsed">
                     <TabItem.Header>
@@ -48,7 +47,7 @@
                             <TextBlock Text="Cleanup Summary" Style="{StaticResource bigText}" />
                         </StackPanel>
                     </TabItem.Header>
-                    <controls:CleanupSummary x:Name="cleanupControl" />
+                    <controls:CleanupSummary BorderBrush="LightGray" BorderThickness="0" x:Name="cleanupControl" />
                 </TabItem>
             </TabControl>
         </Grid>
