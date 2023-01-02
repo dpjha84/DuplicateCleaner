@@ -18,9 +18,9 @@ namespace DuplicateCleaner
                     return Enumerable.Empty<string>();
 
                 if (!filter.IncludeSystemFolders && 
-                        ((dir.FullName == Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.System)).FullName) ||
-                        (dir.FullName == Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) ||
-                        (dir.FullName == Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)))))
+                        (dir.FullName.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.Windows), StringComparison.InvariantCultureIgnoreCase) ||
+                        (dir.FullName.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), StringComparison.InvariantCultureIgnoreCase)) ||
+                        (dir.FullName.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), StringComparison.InvariantCultureIgnoreCase))))
                     return Enumerable.Empty<string>();
 
                 var dirFiles = Enumerable.Empty<string>();

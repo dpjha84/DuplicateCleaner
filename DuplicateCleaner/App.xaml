@@ -5,7 +5,7 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
-
+        
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemeResources RequestedTheme="Light" />
                 <ui:XamlControlsResources />
@@ -355,7 +355,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-            <Style x:Key="ListViewItemStyle1" TargetType="{x:Type ListViewItem}">                
+            <Style x:Key="ListViewItemStyle1" TargetType="{x:Type ListViewItem}">
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
                         <Setter Property="BorderBrush"
@@ -458,6 +458,6 @@
                 </Setter>
             </Style>
 
-        </ResourceDictionary> 
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

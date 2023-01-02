@@ -49,7 +49,7 @@
                                FontWeight="DemiBold"
                                Foreground="Black" />
                 </Grid>
-                <Grid Margin="20,0,20,0"
+                <!--<Grid Margin="20,0,20,0"
                       x:Name="gridScanProgress1"
                       Visibility="Collapsed">
                     <xrpb:RadialProgressBar x:Name="progressBar1"
@@ -60,7 +60,7 @@
                                VerticalAlignment="Center"
                                FontSize="10"
                                Foreground="Black" />
-                </Grid>
+                </Grid>-->
                 <StackPanel Orientation="Horizontal">
                     <Separator x:Name="sep"
                                Visibility="Hidden"

@@ -1,10 +1,12 @@
-﻿using System;
+﻿using DuplicateCleaner;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -139,6 +141,10 @@ namespace DuplicateCleaner.UserControls
         internal void StartScan()
         {
             Reset();
+            if (!searchInfo.ScanLocations.Any())
+            {
+                searchInfo.ScanLocations = DriveInfo.GetDrives().Select(x => new Location { Name = x.Name }).ToList();
+            }
             OnScanInitiated(this, new EventArgs());
             dupDataDict.Clear();
             dupList.Clear();
@@ -149,6 +155,7 @@ namespace DuplicateCleaner.UserControls
 
         private void StartProcess(CancellationToken token)
         {
+            var path = Assembly.GetExecutingAssembly().Location;
             var sw = Stopwatch.StartNew();
             var dataDict = new ConcurrentDictionary<string, List<FileInfoWrapper>>();
             var files = GetFiles(token);
@@ -193,7 +200,7 @@ namespace DuplicateCleaner.UserControls
             {
                 FlushResult(Main.terminated);
                 if (searchInfo.CacheHashData)
-                    HashHelper.CacheHash().ConfigureAwait(false);
+                    HashHelper.CacheHashAsync().ConfigureAwait(false);
             });            
         }
 
@@ -487,16 +494,16 @@ namespace DuplicateCleaner.UserControls
 
         private async void dg_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            var fileInfo = (dg1 as DataGrid).SelectedItem as FileInfoWrapper;
-            if (fileInfo == null) return;
-            await Windows.System.Launcher.LaunchUriAsync(new Uri(fileInfo.FullName));
+            //var fileInfo = (dg1 as DataGrid).SelectedItem as FileInfoWrapper;
+            //if (fileInfo == null) return;
+            //await Windows.System.Launcher.LaunchUriAsync(new Uri(fileInfo.FullName));
         }
 
         private async void MenuItem_Open_Click(object sender, RoutedEventArgs e)
         {
-            ResetGrid();
-            var fileInfo = (dg1 as DataGrid).SelectedItem as FileInfoWrapper;
-            await Windows.System.Launcher.LaunchUriAsync(new Uri(fileInfo.FullName));
+            //ResetGrid();
+            //var fileInfo = (dg1 as DataGrid).SelectedItem as FileInfoWrapper;
+            //await Windows.System.Launcher.LaunchUriAsync(new Uri(fileInfo.FullName));
         }
 
         private void MenuItem_ExcludeByFolder_Click(object sender, RoutedEventArgs e)
@@ -620,9 +627,9 @@ namespace DuplicateCleaner.UserControls
 
         private async void MenuItem_Reveal_Click(object sender, RoutedEventArgs e)
         {
-            ResetGrid();
-            var fileInfo = (dg1 as DataGrid).SelectedItem as FileInfoWrapper;
-            await Windows.System.Launcher.LaunchUriAsync(new Uri(fileInfo.DirectoryName));
+            //ResetGrid();
+            //var fileInfo = (dg1 as DataGrid).SelectedItem as FileInfoWrapper;
+            //await Windows.System.Launcher.LaunchUriAsync(new Uri(fileInfo.DirectoryName));
         }
         #endregion
     }

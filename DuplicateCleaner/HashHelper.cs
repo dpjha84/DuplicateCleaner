@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,30 +13,35 @@ namespace DuplicateCleaner
     public class HashHelper
     {
         const string cacheFile = "hashcache.json";
-        static Dictionary<string, Tuple<DateTime, string>> cache;
+        static ConcurrentDictionary<string, Tuple<DateTime, string>> cache;
 
         static HashHelper()
         {
-            var cacheData = ReadCache();
+            var cacheData = ReadCacheAsync().Result;
             if (!string.IsNullOrWhiteSpace(cacheData))
-                cache = JsonConvert.DeserializeObject<Dictionary<string, Tuple<DateTime, string>>>(cacheData);
+                cache = JsonConvert.DeserializeObject<ConcurrentDictionary<string, Tuple<DateTime, string>>>(cacheData);
             else
-                cache = new Dictionary<string, Tuple<DateTime, string>>();
+                cache = new ConcurrentDictionary<string, Tuple<DateTime, string>>();
         }
 
-        public static async Task ResetCacheAsync()
+        public static void ResetCache()
         {
-            var deleteTask = FileHelper.Delete(cacheFile, Windows.Storage.StorageDeleteOption.Default);
-            cache = new Dictionary<string, Tuple<DateTime, string>>();
-            await deleteTask;
+            File.Delete(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, cacheFile));
+            //var deleteTask = File.Delete(cacheFile);
+            //cache = new Dictionary<string, Tuple<DateTime, string>>();
+            //await deleteTask;
         }
 
-        public static async Task CacheHash()
+        public static async Task CacheHashAsync()
         {
-            await FileHelper.Write(cacheFile, JsonConvert.SerializeObject(cache));
+            await File.WriteAllTextAsync(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, cacheFile), JsonConvert.SerializeObject(cache));
         }
 
-        static string ReadCache() => FileHelper.Read(cacheFile).Result;
+        static async Task<string> ReadCacheAsync()
+        {
+            if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, cacheFile))) return "";
+            return  File.ReadAllTextAsync(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, cacheFile)).Result;
+        }
 
         public static string GetFileHash(string fileName)
         {
@@ -44,7 +51,7 @@ namespace DuplicateCleaner
             if (cache.ContainsKey(fileName))
             {
                 if (lastModifiedTime > cache[fileName].Item1)
-                    cache.Remove(fileName);
+                    cache.TryRemove(fileName, out _);
                 else
                     return cache[fileName].Item2;
             }
@@ -75,18 +82,18 @@ namespace DuplicateCleaner
                         }
                         sb.Append(length);
                         var data = sb.ToString();
-                        cache.Add(fileName, Tuple.Create(lastModifiedTime, data));
+                        cache[fileName] = Tuple.Create(lastModifiedTime, data);
                         return data;
                     }
                     using (var stream = File.OpenRead(fileName))
                     {
                         var data = Encoding.Default.GetString(md5.ComputeHash(stream));
-                        cache.Add(fileName, Tuple.Create(lastModifiedTime, data));
+                        cache[fileName] = Tuple.Create(lastModifiedTime, data);
                         return data;
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return null;
             }

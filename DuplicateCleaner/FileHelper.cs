@@ -6,8 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Storage;
+//using Windows.Foundation;
+//using Windows.Storage;
 
 namespace DuplicateCleaner
 {
@@ -28,41 +28,11 @@ namespace DuplicateCleaner
             return FileType.Custom;
         }
 
-        public static async Task Write(string fileName, string data)
-        {
-            var file = await GetFile(fileName, CreationCollisionOption.ReplaceExisting).ConfigureAwait(false);
-            await FileIO.WriteTextAsync(file, data).AsTask().ConfigureAwait(false);
-        }
-
         public static async Task DeleteFileAsync(string item, DeleteOption option)
         {
             await Task.Run(() => FileSystem.DeleteFile(item, UIOption.OnlyErrorDialogs, 
                 option == DeleteOption.PermanentDelete ? RecycleOption.DeletePermanently : RecycleOption.SendToRecycleBin,
                 UICancelOption.DoNothing));
-        }
-
-        public static async Task Delete(string fileName, StorageDeleteOption option)
-        {
-            var file = await GetFile(fileName, CreationCollisionOption.ReplaceExisting).ConfigureAwait(false);
-            await file.DeleteAsync(option);
-        }
-
-        //public static async Task DeleteFromPath(string filePath)
-        //{
-        //    var file = await StorageFile.GetFileFromPathAsync(filePath);
-        //    await file.DeleteAsync(SearchInfo.Instance.DeleteOption == Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin ?
-        //        StorageDeleteOption.Default : StorageDeleteOption.PermanentDelete);
-        //}
-
-        public static async Task<string> Read(string fileName)
-        {
-            var file = await GetFile(fileName, CreationCollisionOption.OpenIfExists).ConfigureAwait(false);
-            return await FileIO.ReadTextAsync(file);
-        }
-
-        private static async Task<StorageFile> GetFile(string fileName, CreationCollisionOption option)
-        {
-            return await ApplicationData.Current.LocalFolder.CreateFileAsync(fileName, option).AsTask().ConfigureAwait(false);
         }
     }
 }

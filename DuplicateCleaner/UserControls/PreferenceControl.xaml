@@ -29,7 +29,7 @@
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0"  Text="Scan Folders" Style="{StaticResource PrefrenceHeader}"></TextBlock>
                         <StackPanel Margin="0,0,0,10" Orientation="Horizontal" Grid.Row="1">
-                            <TextBlock Foreground="Gray" FontSize="16" Text="Add a folder to scan for duplicates. Once added, scan locations would be listed below." VerticalAlignment="Center" />
+                            <TextBlock Foreground="Gray" FontSize="16" Text="Add folders to scan for duplicates. Once added, scan locations would be listed below." VerticalAlignment="Center" />
                             <Button BorderThickness="0" Background="Transparent"  HorizontalAlignment="Right" Width="50" Height="50" Margin="10" Name="btnAddLocation" Click="btnAddLocation_Click">
                                 <Image x:Name="imgAddFolder" />
                             </Button>

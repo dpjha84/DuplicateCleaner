@@ -9,7 +9,7 @@
   <Identity
     Name="6993DivyaPrakashJha.DuplicateRemoverPro"
     Publisher="CN=C3392AD5-1140-41C5-996F-BBC013A6F372"
-    Version="2.0.1.0" />
+    Version="2.1.2.0" />
 
   <Properties>
     <DisplayName>Duplicate Remover Pro</DisplayName>
@@ -32,7 +32,7 @@
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
         DisplayName="Duplicate Remover Pro"
-        Description="DuplicateCleaner.UWP"
+        Description="DuplicateCleaner.Package"
         BackgroundColor="transparent"
         Square150x150Logo="Images\Square150x150Logo.png"
         Square44x44Logo="Images\Square44x44Logo.png">

@@ -1,49 +1,72 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DuplicateCleaner
 {
     public class SearchInfo
     {
-        const string settingFile = "setting.json";
+        static string settingFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "setting.json");
+        //static string logFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log.txt");
+        static object lockObject = new object();
 
         static SearchInfo()
         {
-            try
+            var drives = DriveInfo.GetDrives().Select(x => x.Name);
+            lock (lockObject)
             {
-                var cacheData = FileHelper.Read(settingFile).Result;
-                Instance = string.IsNullOrWhiteSpace(cacheData) ? DefaultInstance : JsonConvert.DeserializeObject<SearchInfo>(cacheData);
-            }
-            catch
-            {
-                Instance = DefaultInstance;
+                try
+                {
+                    string? cacheData = null;
+                    if (File.Exists(settingFile))
+                        cacheData = File.ReadAllText(settingFile);
+
+                    //File.WriteAllText(logFile, $"ZZZZZ: {settingFile}");
+                    //File.WriteAllText(logFile, $"ZZZZZ: {cacheData}");
+
+                    var temp = JsonConvert.DeserializeObject<SearchInfo>(cacheData);
+                    _instance = !string.IsNullOrWhiteSpace(cacheData) && temp.ScanLocations.Any() ? temp : DefaultInstance;
+                }
+                catch(Exception ex)
+                {
+                    //File.WriteAllText(logFile, ex.Message);
+                    _instance = DefaultInstance;
+                }
             }
         }
 
         static SearchInfo DefaultInstance { get; } = new SearchInfo
         {
-            ScanLocations = new List<Location>
-                {
-                    new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) },
-                    new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) },
-                    new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos) },
-                    new Location { Name = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) },
-                }
+            ScanLocations = DriveInfo.GetDrives().Select(x => new Location { Name = x.Name }).ToList()
         };
 
         public static void UpdateSetting()
         {
-            FileHelper.Write(settingFile, JsonConvert.SerializeObject(Instance)).ConfigureAwait(false);
+            File.WriteAllText(settingFile, JsonConvert.SerializeObject(Instance));
         }
 
-        public static SearchInfo Instance { get; private set; }
+        private static SearchInfo? _instance;
+        public static SearchInfo Instance
+        {
+            get
+            {
+                lock (lockObject)
+                {
+                    return _instance;
+                }
+            }
+            set
+            {
+                lock (lockObject)
+                {
+                    { _instance = value; }
+                }
+            }
+        }
 
-        public List<Location> ScanLocations { get; set; }
+        public List<Location> ScanLocations { get; set; } = new List<Location>();
 
         public bool IncludeImages { get; set; } = true;
 
@@ -67,7 +90,7 @@ namespace DuplicateCleaner
 
         public DeleteOption DeleteOption { get; set; } = DeleteOption.SendToRecycleBin;
 
-        public bool ShowWelcomePageAtStartup { get; set; } = true;
+        //public bool ShowWelcomePageAtStartup { get; set; } = false;
 
         public DuplicationMarkingCriteria DupCriteria { get; set; }
 
@@ -75,7 +98,7 @@ namespace DuplicateCleaner
 
         public bool CacheHashData { get; set; } = true;
 
-        public IEnumerable<string> CustomFileTypes { get; set; } = Enumerable.Empty<string>();
+        public IEnumerable<string> CustomFileTypes { get; set; } = new List<string>();
     }
 
     public enum DuplicationMarkingCriteria { FileContent, FileName }
@@ -93,7 +116,7 @@ namespace DuplicateCleaner
 
         public bool ExcludedInTree { get; set; }
 
-        public string RemoveIcon { get; set; } = "..\\..\\images\\Remove.png";
+        public string RemoveIcon { get; set; } = "..\\images\\Remove.png";
 
         string icon;
         public string Icon

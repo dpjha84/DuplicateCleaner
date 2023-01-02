@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,7 @@ namespace DuplicateCleaner.UserControls
         public event EventHandler<EventArgs> OnScanStopped;
         public event EventHandler<EventArgs> OnDeleteStared;
         public DuplicatesControl dupControl { get; set; }
+        //public PreferenceControl prefControl { get; set; }
         public TopPanel()
         {
             InitializeComponent();
@@ -69,7 +71,7 @@ namespace DuplicateCleaner.UserControls
         private void DupControl_OnScanStopping(object sender, EventArgs e)
         {
             txtProgress.Text = "Stopping...";
-            txtProgress1.Text = "Stopping...";
+            txtProgress.Text = "Stopping...";
             button.IsEnabled = false;
             button.Content = "Start Scan";
         }
@@ -83,10 +85,10 @@ namespace DuplicateCleaner.UserControls
                 progressBar.IsIndeterminate = false;
                 txtProgress.Text = e.StatusLabelText;
 
-                progressBar1.Value = 100;
+                progressBar.Value = 100;
                 //txtProgress.Text = "100%";
-                progressBar1.IsIndeterminate = false;
-                txtProgress1.Text = e.StatusLabelText;
+                progressBar.IsIndeterminate = false;
+                txtProgress.Text = e.StatusLabelText;
 
 
                 button.IsEnabled = true;
@@ -114,10 +116,6 @@ namespace DuplicateCleaner.UserControls
                 progressBar.IsIndeterminate = false;
                 progressBar.Value = e.CurrentProgress;
                 txtProgress.Text = $"{progressBar.Value}%";
-
-                progressBar1.IsIndeterminate = false;
-                progressBar1.Value = e.CurrentProgress;
-                txtProgress1.Text = $"{progressBar1.Value}%";
             });
         }
 
@@ -128,10 +126,6 @@ namespace DuplicateCleaner.UserControls
                 progressBar.IsIndeterminate = false;
                 progressBar.Value = 0;
                 txtProgress.Text = $"{progressBar.Value}%";
-
-                progressBar1.IsIndeterminate = false;
-                progressBar1.Value = 0;
-                txtProgress1.Text = $"{progressBar1.Value}%";
             });
         }
 
@@ -139,20 +133,27 @@ namespace DuplicateCleaner.UserControls
         {
             Dispatcher.Invoke(() =>
             {
+                //if (!SearchInfo.Instance.ScanLocations.Any())
+                //{
+                //    SearchInfo.Instance.ScanLocations.Add(new Location { Name = @"C:\" });
+                //    prefControl.lvLocations.ItemsSource = SearchInfo.Instance.ScanLocations;
+                //    prefControl.lvLocations.Items.Refresh();
+                //}
+
                 //statusLabel.Text = "Scanning...";
                 button.Content = "Stop Scan";
                 progressBar.IsIndeterminate = true;
                 txtProgress.Text = "Scanning...";
 
-                progressBar1.IsIndeterminate = true;
-                txtProgress1.Text = "Scanning...";
+                progressBar.IsIndeterminate = true;
+                txtProgress.Text = "Scanning...";
             });
         }
 
         private void BtnStart_Click(object sender, RoutedEventArgs e)
         {
             txtProgress.Text = "";
-            txtProgress1.Text = "";
+            txtProgress.Text = "";
             //statusDeleteLabel.Text = "";
             gridScanProgress.Visibility = Visibility.Visible;
             //gridScanProgress1.Visibility = Visibility.Visible;
@@ -183,10 +184,11 @@ namespace DuplicateCleaner.UserControls
             }
         }
 
-        private async void btnHelp_Click(object sender, RoutedEventArgs e)
+        private void btnHelp_Click(object sender, RoutedEventArgs e)
         {
-            const string subject = "Feedback for Duplicate Remover Pro";
-            await Windows.System.Launcher.LaunchUriAsync(new Uri($"mailto:dpjha84@gmail.com?subject={subject}"));
+            const string subject = "Feedback or help for Duplicate Remover Pro";
+            Process.Start(new ProcessStartInfo (new Uri($"mailto:dpjha84@gmail.com?subject={subject}").ToString()) { UseShellExecute = true});
+            e.Handled = true;
         }
     }
 }

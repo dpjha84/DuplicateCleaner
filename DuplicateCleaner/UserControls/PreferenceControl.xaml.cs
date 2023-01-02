@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -6,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace DuplicateCleaner.UserControls
 {
@@ -29,7 +31,7 @@ namespace DuplicateCleaner.UserControls
             txtMinSize.LostFocus += TxtMinSize_LostFocus;
             txtMaxSize.LostFocus += TxtMaxSize_LostFocus;
 
-            imgAddFolder.Source = new BitmapImage(new Uri("..\\..\\images\\AddFolder2.png", UriKind.Relative));
+            imgAddFolder.Source = new BitmapImage(new Uri("..\\images\\AddFolder2.png", UriKind.Relative));
             loaded = true;
         }
 
@@ -133,6 +135,12 @@ namespace DuplicateCleaner.UserControls
                 chkMaxModifyDate.IsChecked = false;
                 dpMaxModifyDate.IsEnabled = false;
             }
+            //if(!searchInfo.ScanLocations.Any())
+            //{
+            //    searchInfo.ScanLocations = DriveInfo.GetDrives().Select(x => new Location { Name = x.Name }).ToList();
+            //    lvLocations.ItemsSource = searchInfo.ScanLocations;
+            //    lvLocations.Items.Refresh();
+            //}
         }
 
         int GetIndexByUnit(string val)
@@ -147,11 +155,13 @@ namespace DuplicateCleaner.UserControls
         {
             var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
             var result = dialog.ShowDialog();
-            if (result.HasValue && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
+            if (result.HasValue && !string.IsNullOrWhiteSpace(dialog.SelectedPath)
+                && !searchInfo.ScanLocations.Any(x => x.Name.Equals(dialog.SelectedPath,StringComparison.InvariantCultureIgnoreCase)))
             {
                 searchInfo.ScanLocations.Add(new Location { Name = dialog.SelectedPath });
                 lvLocations.ItemsSource = searchInfo.ScanLocations;
                 lvLocations.Items.Refresh();
+                SearchInfo.UpdateSetting();
             }
         }
 
@@ -161,7 +171,13 @@ namespace DuplicateCleaner.UserControls
             if (location != null)
             {
                 searchInfo.ScanLocations.Remove(location);
+
+                //if (searchInfo.ScanLocations.Count == 0)
+                //{
+                //    searchInfo.ScanLocations.AddRange(DriveInfo.GetDrives().Select(x => new Location { Name = x.Name }));
+                //}
                 lvLocations.Items.Refresh();
+                SearchInfo.UpdateSetting();
             }
         }
 
@@ -376,10 +392,10 @@ namespace DuplicateCleaner.UserControls
             SetBorderColor(sender, System.Windows.Media.Brushes.Gray);
         }
 
-        private async void btnClearNow_Click(object sender, RoutedEventArgs e)
+        private void btnClearNow_Click(object sender, RoutedEventArgs e)
         {
             tbCacheCleared.Visibility = Visibility.Visible;
-            await HashHelper.ResetCacheAsync();
+            HashHelper.ResetCache();
         }
 
         private void cmbDeleteOption_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -394,13 +410,13 @@ namespace DuplicateCleaner.UserControls
             btnClearNow.Style = FindResource("deleteButton") as Style;
         }
 
-        private async void chkCacheScannedData_Unchecked(object sender, RoutedEventArgs e)
+        private void chkCacheScannedData_Unchecked(object sender, RoutedEventArgs e)
         {
-            var task = HashHelper.ResetCacheAsync();
+            HashHelper.ResetCache();
             searchInfo.CacheHashData = false;
             btnClearNow.Style = FindResource("disabledButton") as Style;
             tbCacheCleared.Visibility = Visibility.Collapsed;
-            await task;
+            //await task;
         }
 
         private void cmbDupCriteria_SelectionChanged(object sender, SelectionChangedEventArgs e)
